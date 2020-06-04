@@ -1,0 +1,2 @@
+﻿C:\Soft\Microsoft Visual Studio 16 (2019)\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(467,5): warning MSB8028: промежуточный каталог (x64\Debug\) содержит файлы, которые используются совместно с другим проектом (Advanced OpenGL.vcxproj, Lighting.vcxproj).  Это может привести к ошибкам очистки и перестроения.
+  Hello_Window.vcxproj -> C:\Users\donButadeus\source\repos\Advanced OpenGL\x64\Debug\Model Loading.exe
