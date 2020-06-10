@@ -6,23 +6,23 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
 
-// Љонстанты
+// РљРѕРЅСЃС‚Р°РЅС‚С‹
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
 int main()
 {
-    // glfw: инициализациЯ и конфигурирование
+    // glfw: РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Рё РєРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 #ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // расскоментируйте эту строчку, если используете macOS
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // СЂР°СЃСЃРєРѕРјРµРЅС‚РёСЂСѓР№С‚Рµ СЌС‚Сѓ СЃС‚СЂРѕС‡РєСѓ, РµСЃР»Рё РёСЃРїРѕР»СЊР·СѓРµС‚Рµ macOS
 #endif
 
-    // glfw создание окна
+    // glfw СЃРѕР·РґР°РЅРёРµ РѕРєРЅР°
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL for Ravesli.com", NULL, NULL);
     if (window == NULL)
     {
@@ -33,44 +33,44 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-    // glad: загрузка всех указателей на OpenGL-функции
+    // glad: Р·Р°РіСЂСѓР·РєР° РІСЃРµС… СѓРєР°Р·Р°С‚РµР»РµР№ РЅР° OpenGL-С„СѓРЅРєС†РёРё
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }    
 
-    // –икл рендеринга
+    // С†РёРєР» СЂРµРЅРґРµСЂРёРЅРіР°
     while (!glfwWindowShouldClose(window))
     {
-        // Ћбработка ввода
+        // РћР±СЂР°Р±РѕС‚РєР° РІРІРѕРґР°
         processInput(window);
 		
-		// ‚ыполнение рендеринга
+	// Р’С‹РїРѕР»РЅРµРЅРёРµ СЂРµРЅРґРµСЂРёРЅРіР°
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // glfw: обмен содержимым front- и back- буферов. Ћтслеживание событий ‚вода/‚вывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
+        // glfw: РѕР±РјРµРЅ СЃРѕРґРµСЂР¶РёРјС‹Рј front- Рё back- Р±СѓС„РµСЂРѕРІ. РћС‚СЃР»РµР¶РёРІР°РЅРёРµ СЃРѕР±С‹С‚РёР№ РІРѕРґР°/РІС‹РІРѕРґР° (Р±С‹Р»Р° Р»Рё РЅР°Р¶Р°С‚Р°/РѕС‚РїСѓС‰РµРЅР° РєРЅРѕРїРєР°, РїРµСЂРµРјРµС‰РµРЅ РєСѓСЂСЃРѕСЂ РјС‹С€Рё Рё С‚.Рї.)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    // glfw: завершение, освобождение всех ранее задействованных GLFW-ресурсов
+    // glfw: Р·Р°РІРµСЂС€РµРЅРёРµ, РѕСЃРІРѕР±РѕР¶РґРµРЅРёРµ РІСЃРµС… СЂР°РЅРµРµ Р·Р°РґРµР№СЃС‚РІРѕРІР°РЅРЅС‹С… GLFW-СЂРµСЃСѓСЂСЃРѕРІ
     glfwTerminate();
     return 0;
 }
 
-// Ћбработка всех событий ввода: запрос GLFW о нажатии/отпускании клавиш на клавиатуре в данном кадре и соответствующаЯ обработка данных событий
+// РћР±СЂР°Р±РѕС‚РєР° РІСЃРµС… СЃРѕР±С‹С‚РёР№ РІРІРѕРґР°: Р·Р°РїСЂРѕСЃ GLFW Рѕ РЅР°Р¶Р°С‚РёРё/РѕС‚РїСѓСЃРєР°РЅРёРё РєР»Р°РІРёС€ РЅР° РєР»Р°РІРёР°С‚СѓСЂРµ РІ РґР°РЅРЅРѕРј РєР°РґСЂРµ Рё СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰Р°СЏ РѕР±СЂР°Р±РѕС‚РєР° РґР°РЅРЅС‹С… СЃРѕР±С‹С‚РёР№
 void processInput(GLFWwindow *window)
 {
     if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
 
-// glfw: всЯкий раз, когда изменЯютсЯ размеры окна (пользователем или оперионной системой), вызываетсЯ даннаЯ callback-функциЯ
+// glfw: РІСЃСЏРєРёР№ СЂР°Р·, РєРѕРіРґР° РёР·РјРµРЅСЏСЋС‚СЃСЏ СЂР°Р·РјРµСЂС‹ РѕРєРЅР° (РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј РёР»Рё РѕРїРµСЂРёРѕРЅРЅРѕР№ СЃРёСЃС‚РµРјРѕР№), РІС‹Р·С‹РІР°РµС‚СЃСЏ РґР°РЅРЅР°СЏ callback-С„СѓРЅРєС†РёСЏ
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // убеждаемсЯ, что окно просмотра соответствует новым размерам окна 
-	// обратите внимание, что ширина и высота будут значительно больше, чем указано на Retina-дисплеЯх
+    // СѓР±РµР¶РґР°РµРјСЃСЏ, С‡С‚Рѕ РѕРєРЅРѕ РїСЂРѕСЃРјРѕС‚СЂР° СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ РЅРѕРІС‹Рј СЂР°Р·РјРµСЂР°Рј РѕРєРЅР° 
+	// РѕР±СЂР°С‚РёС‚Рµ РІРЅРёРјР°РЅРёРµ, С‡С‚Рѕ С€РёСЂРёРЅР° Рё РІС‹СЃРѕС‚Р° Р±СѓРґСѓС‚ Р·РЅР°С‡РёС‚РµР»СЊРЅРѕ Р±РѕР»СЊС€Рµ, С‡РµРј СѓРєР°Р·Р°РЅРѕ РЅР° Retina-РґРёСЃРїР»РµСЏС…
     glViewport(0, 0, width, height);
 }
