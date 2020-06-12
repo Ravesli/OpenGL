@@ -18,23 +18,23 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 unsigned int loadTexture(const char* path);
 
-// настройки
+// РЅР°СЃС‚СЂРѕР№РєРё
 const unsigned int SCR_WIDTH = 600;
 const unsigned int SCR_HEIGHT = 400;
 
-// камера
+// РєР°РјРµСЂР°
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
 bool firstMouse = true;
 
-// тайминги
+// С‚Р°Р№РјРёРЅРіРё
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 int main()
 {
-    // glfw: инициализация и конфигурирование
+    // glfw: РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Рё РєРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ
     // ------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -45,7 +45,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    // glfw создание окна
+    // glfw СЃРѕР·РґР°РЅРёРµ РѕРєРЅР°
     // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL for Ravesli.com!", NULL, NULL);
     if (window == NULL)
@@ -59,10 +59,10 @@ int main()
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
-    // говорим GLFW захватить нашу мышку
+    // РіРѕРІРѕСЂРёРј GLFW Р·Р°С…РІР°С‚РёС‚СЊ РЅР°С€Сѓ РјС‹С€РєСѓ
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    // glad: загрузка всех указателей на OpenGL-функции
+    // glad: Р·Р°РіСЂСѓР·РєР° РІСЃРµС… СѓРєР°Р·Р°С‚РµР»РµР№ РЅР° OpenGL-С„СѓРЅРєС†РёРё
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -70,19 +70,19 @@ int main()
         return -1;
     }
 
-    // конфигурирование глобального состояния OpenGL
+    // РєРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ РіР»РѕР±Р°Р»СЊРЅРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ OpenGL
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
-    glDepthFunc(GL_LESS); // тест глубины всегда проходит успешно (аналогично glDisable(GL_DEPTH_TEST))
+    glDepthFunc(GL_LESS); // С‚РµСЃС‚ РіР»СѓР±РёРЅС‹ РІСЃРµРіРґР° РїСЂРѕС…РѕРґРёС‚ СѓСЃРїРµС€РЅРѕ (Р°РЅР°Р»РѕРіРёС‡РЅРѕ glDisable(GL_DEPTH_TEST))
 
-    // компилирование нашей шейдерной программы
+    // РєРѕРјРїРёР»РёСЂРѕРІР°РЅРёРµ РЅР°С€РµР№ С€РµР№РґРµСЂРЅРѕР№ РїСЂРѕРіСЂР°РјРјС‹
     // -------------------------
     Shader shader("../1.1.depth_testing.vs", "../1.1.depth_testing.fs");
 
-    // установка вершинных данных (буффера(-ов)) и настройка вершинных атрибутов
+    // СѓСЃС‚Р°РЅРѕРІРєР° РІРµСЂС€РёРЅРЅС‹С… РґР°РЅРЅС‹С… (Р±СѓС„С„РµСЂР°(-РѕРІ)) Рё РЅР°СЃС‚СЂРѕР№РєР° РІРµСЂС€РёРЅРЅС‹С… Р°С‚СЂРёР±СѓС‚РѕРІ
     // ------------------------------------------------------------------
     float cubeVertices[] = {
-        // координаты          // текстурные координаты
+        // РєРѕРѕСЂРґРёРЅР°С‚С‹          // С‚РµРєСЃС‚СѓСЂРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
          0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
          0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -126,7 +126,7 @@ int main()
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
     float planeVertices[] = {
-        // координаты          // текстурные координаты (обратите внимание, что мы устанавливаем их значения больше единицы (в сочетании с GL_REPEAT в качестве режима наложения текстур). Это приведет к повторению текстуры пола)
+        // РєРѕРѕСЂРґРёРЅР°С‚С‹          // С‚РµРєСЃС‚СѓСЂРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ (РѕР±СЂР°С‚РёС‚Рµ РІРЅРёРјР°РЅРёРµ, С‡С‚Рѕ РјС‹ СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РёС… Р·РЅР°С‡РµРЅРёСЏ Р±РѕР»СЊС€Рµ РµРґРёРЅРёС†С‹ (РІ СЃРѕС‡РµС‚Р°РЅРёРё СЃ GL_REPEAT РІ РєР°С‡РµСЃС‚РІРµ СЂРµР¶РёРјР° РЅР°Р»РѕР¶РµРЅРёСЏ С‚РµРєСЃС‚СѓСЂ). Р­С‚Рѕ РїСЂРёРІРµРґРµС‚ Рє РїРѕРІС‚РѕСЂРµРЅРёСЋ С‚РµРєСЃС‚СѓСЂС‹ РїРѕР»Р°)
          5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
         -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
         -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
@@ -135,7 +135,7 @@ int main()
         -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
          5.0f, -0.5f, -5.0f,  2.0f, 2.0f
     };
-    // VAO куба
+    // VAO РєСѓР±Р°
     unsigned int cubeVAO, cubeVBO;
     glGenVertexArrays(1, &cubeVAO);
     glGenBuffers(1, &cubeVBO);
@@ -147,7 +147,7 @@ int main()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
-    // VAO пола
+    // VAO РїРѕР»Р°
     unsigned int planeVAO, planeVBO;
     glGenVertexArrays(1, &planeVAO);
     glGenBuffers(1, &planeVBO);
@@ -160,31 +160,31 @@ int main()
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glBindVertexArray(0);
 
-    // Загрузка текстур
+    // Р—Р°РіСЂСѓР·РєР° С‚РµРєСЃС‚СѓСЂ
     // -------------
     unsigned int cubeTexture = loadTexture("../resources/textures/marble.jpg");
     unsigned int floorTexture = loadTexture("../resources/textures/metal.jpg");
 
-    // настройка шейдера
+    // РЅР°СЃС‚СЂРѕР№РєР° С€РµР№РґРµСЂР°
     // --------------------
     shader.use();
     shader.setInt("texture1", 0);
 
-    // цикл рендеринга
+    // С†РёРєР» СЂРµРЅРґРµСЂРёРЅРіР°
     // -----------
     while (!glfwWindowShouldClose(window))
     {
-        // логическая часть работы со временем для каждого кадра
+        // Р»РѕРіРёС‡РµСЃРєР°СЏ С‡Р°СЃС‚СЊ СЂР°Р±РѕС‚С‹ СЃРѕ РІСЂРµРјРµРЅРµРј РґР»СЏ РєР°Р¶РґРѕРіРѕ РєР°РґСЂР°
         // --------------------
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // обработка ввода
+        // РѕР±СЂР°Р±РѕС‚РєР° РІРІРѕРґР°
         // -----
         processInput(window);
 
-        // рендеринг
+        // СЂРµРЅРґРµСЂРёРЅРі
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -195,7 +195,7 @@ int main()
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
-        // кубы
+        // РєСѓР±С‹
         glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
@@ -206,20 +206,20 @@ int main()
         model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-        // пол
+        // РїРѕР»
         glBindVertexArray(planeVAO);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
         shader.setMat4("model", glm::mat4(1.0f));
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
 
-        // glfw: обмен содержимым переднего и заднего буферов. Опрос событий Ввода\Ввывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
+        // glfw: РѕР±РјРµРЅ СЃРѕРґРµСЂР¶РёРјС‹Рј РїРµСЂРµРґРЅРµРіРѕ Рё Р·Р°РґРЅРµРіРѕ Р±СѓС„РµСЂРѕРІ. РћРїСЂРѕСЃ СЃРѕР±С‹С‚РёР№ Р’РІРѕРґР°\Р’РІС‹РІРѕРґР° (Р±С‹Р»Р° Р»Рё РЅР°Р¶Р°С‚Р°/РѕС‚РїСѓС‰РµРЅР° РєРЅРѕРїРєР°, РїРµСЂРµРјРµС‰РµРЅ РєСѓСЂСЃРѕСЂ РјС‹С€Рё Рё С‚.Рї.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    // опционально: освобеждение памяти, выделенной под ресурсы
+    // РѕРїС†РёРѕРЅР°Р»СЊРЅРѕ: РѕСЃРІРѕР±РµР¶РґРµРЅРёРµ РїР°РјСЏС‚Рё, РІС‹РґРµР»РµРЅРЅРѕР№ РїРѕРґ СЂРµСЃСѓСЂСЃС‹
     // ------------------------------------------------------------------------
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteVertexArrays(1, &planeVAO);
@@ -230,7 +230,7 @@ int main()
     return 0;
 }
 
-// Обработка всех событий ввода: запрос GLFW о нажатии/отпускании кнопки мыши в данном кадре и соответствующая обработка данных событий
+// РћР±СЂР°Р±РѕС‚РєР° РІСЃРµС… СЃРѕР±С‹С‚РёР№ РІРІРѕРґР°: Р·Р°РїСЂРѕСЃ GLFW Рѕ РЅР°Р¶Р°С‚РёРё/РѕС‚РїСѓСЃРєР°РЅРёРё РєРЅРѕРїРєРё РјС‹С€Рё РІ РґР°РЅРЅРѕРј РєР°РґСЂРµ Рё СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰Р°СЏ РѕР±СЂР°Р±РѕС‚РєР° РґР°РЅРЅС‹С… СЃРѕР±С‹С‚РёР№
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window)
 {
@@ -247,7 +247,7 @@ void processInput(GLFWwindow* window)
         camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
-// glfw: всякий раз, когда изменяются размеры окна (пользователем или опер. системой), вызывается данная функция
+// glfw: РІСЃСЏРєРёР№ СЂР°Р·, РєРѕРіРґР° РёР·РјРµРЅСЏСЋС‚СЃСЏ СЂР°Р·РјРµСЂС‹ РѕРєРЅР° (РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј РёР»Рё РѕРїРµСЂ. СЃРёСЃС‚РµРјРѕР№), РІС‹Р·С‹РІР°РµС‚СЃСЏ РґР°РЅРЅР°СЏ С„СѓРЅРєС†РёСЏ
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
@@ -256,7 +256,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     glViewport(0, 0, width, height);
 }
 
-// glfw: всякий раз, когда перемещается мышь, вызывается данная callback-функция
+// glfw: РІСЃСЏРєРёР№ СЂР°Р·, РєРѕРіРґР° РїРµСЂРµРјРµС‰Р°РµС‚СЃСЏ РјС‹С€СЊ, РІС‹Р·С‹РІР°РµС‚СЃСЏ РґР°РЅРЅР°СЏ callback-С„СѓРЅРєС†РёСЏ
 // -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
@@ -268,7 +268,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     }
 
     float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // перевернуто, так как Y-координаты идут снизу вверх
+    float yoffset = lastY - ypos; // РїРµСЂРµРІРµСЂРЅСѓС‚Рѕ, С‚Р°Рє РєР°Рє Y-РєРѕРѕСЂРґРёРЅР°С‚С‹ РёРґСѓС‚ СЃРЅРёР·Сѓ РІРІРµСЂС…
 
     lastX = xpos;
     lastY = ypos;
@@ -276,14 +276,14 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
-// glfw: всякий раз, когда прокручивается колесико мыши, вызывается данная callback-функция
+// glfw: РІСЃСЏРєРёР№ СЂР°Р·, РєРѕРіРґР° РїСЂРѕРєСЂСѓС‡РёРІР°РµС‚СЃСЏ РєРѕР»РµСЃРёРєРѕ РјС‹С€Рё, РІС‹Р·С‹РІР°РµС‚СЃСЏ РґР°РЅРЅР°СЏ callback-С„СѓРЅРєС†РёСЏ
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     camera.ProcessMouseScroll(yoffset);
 }
 
-// вспомогательная функция загрузки 2D-текстур из файла
+// РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ Р·Р°РіСЂСѓР·РєРё 2D-С‚РµРєСЃС‚СѓСЂ РёР· С„Р°Р№Р»Р°
 // ---------------------------------------------------
 unsigned int loadTexture(char const* path)
 {

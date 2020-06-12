@@ -1,12 +1,12 @@
 #ifndef MESH_H
 #define MESH_H
 
-#include <glad/glad.h> // содержит все объявления OpenGL-типов
+#include <glad/glad.h> // СЃРѕРґРµСЂР¶РёС‚ РІСЃРµ РѕР±СЉСЏРІР»РµРЅРёСЏ OpenGL-С‚РёРїРѕРІ
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "shader.h" //shader.h идентичен файлу shader_s.h
+#include "shader.h" //shader.h РёРґРµРЅС‚РёС‡РµРЅ С„Р°Р№Р»Сѓ shader_s.h
 
 #include <string>
 #include <vector>
@@ -14,19 +14,19 @@ using namespace std;
 
 struct Vertex {
 
-    // Позиция
+    // РџРѕР·РёС†РёСЏ
     glm::vec3 Position;
 
-    // Нормаль
+    // РќРѕСЂРјР°Р»СЊ
     glm::vec3 Normal;
 
-    // Текстурные координаты
+    // РўРµРєСЃС‚СѓСЂРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
     glm::vec2 TexCoords;
 
-    // Касательный вектор
+    // РљР°СЃР°С‚РµР»СЊРЅС‹Р№ РІРµРєС‚РѕСЂ
     glm::vec3 Tangent;
 
-    // Вектор бинормали (вектор, перпендикулярный касательному вектору и вектору нормали)
+    // Р’РµРєС‚РѕСЂ Р±РёРЅРѕСЂРјР°Р»Рё (РІРµРєС‚РѕСЂ, РїРµСЂРїРµРЅРґРёРєСѓР»СЏСЂРЅС‹Р№ РєР°СЃР°С‚РµР»СЊРЅРѕРјСѓ РІРµРєС‚РѕСЂСѓ Рё РІРµРєС‚РѕСЂСѓ РЅРѕСЂРјР°Р»Рё)
     glm::vec3 Bitangent;
 };
 
@@ -38,104 +38,104 @@ struct Texture {
 
 class Mesh {
 public:
-    // Данные mesh-а
+    // Р”Р°РЅРЅС‹Рµ mesh-Р°
     vector<Vertex>       vertices;
     vector<unsigned int> indices;
     vector<Texture>      textures;
     unsigned int VAO;
 
-    // Конструктор
+    // РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
     Mesh(vector<Vertex> vertices, vector<unsigned int> indices, vector<Texture> textures)
     {
         this->vertices = vertices;
         this->indices = indices;
         this->textures = textures;
 
-        // Теперь, когда у нас есть все необходимые данные, устанавливаем вершинные буферы и указатели атрибутов
+        // РўРµРїРµСЂСЊ, РєРѕРіРґР° Сѓ РЅР°СЃ РµСЃС‚СЊ РІСЃРµ РЅРµРѕР±С…РѕРґРёРјС‹Рµ РґР°РЅРЅС‹Рµ, СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІРµСЂС€РёРЅРЅС‹Рµ Р±СѓС„РµСЂС‹ Рё СѓРєР°Р·Р°С‚РµР»Рё Р°С‚СЂРёР±СѓС‚РѕРІ
         setupMesh();
     }
 
-    // Рендеринг mesh-а
+    // Р РµРЅРґРµСЂРёРЅРі mesh-Р°
     void Draw(Shader& shader)
     {
-        // Связываем соответствующие текстуры
+        // РЎРІСЏР·С‹РІР°РµРј СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёРµ С‚РµРєСЃС‚СѓСЂС‹
         unsigned int diffuseNr = 1;
         unsigned int specularNr = 1;
         unsigned int normalNr = 1;
         unsigned int heightNr = 1;
         for (unsigned int i = 0; i < textures.size(); i++)
         {
-            glActiveTexture(GL_TEXTURE0 + i); // перед связыванием активируем нужный текстурный юнит
-            // Получаем номер текстуры (номер N в diffuse_textureN)
+            glActiveTexture(GL_TEXTURE0 + i); // РїРµСЂРµРґ СЃРІСЏР·С‹РІР°РЅРёРµРј Р°РєС‚РёРІРёСЂСѓРµРј РЅСѓР¶РЅС‹Р№ С‚РµРєСЃС‚СѓСЂРЅС‹Р№ СЋРЅРёС‚
+            // РџРѕР»СѓС‡Р°РµРј РЅРѕРјРµСЂ С‚РµРєСЃС‚СѓСЂС‹ (РЅРѕРјРµСЂ N РІ diffuse_textureN)
             string number;
             string name = textures[i].type;
             if (name == "texture_diffuse")
                 number = std::to_string(diffuseNr++);
             else if (name == "texture_specular")
-                number = std::to_string(specularNr++); // конвертируем unsigned int в строку
+                number = std::to_string(specularNr++); // РєРѕРЅРІРµСЂС‚РёСЂСѓРµРј unsigned int РІ СЃС‚СЂРѕРєСѓ
             else if (name == "texture_normal")
-                number = std::to_string(normalNr++); // конвертируем unsigned int в строку
+                number = std::to_string(normalNr++); // РєРѕРЅРІРµСЂС‚РёСЂСѓРµРј unsigned int РІ СЃС‚СЂРѕРєСѓ
             else if (name == "texture_height")
-                number = std::to_string(heightNr++); // конвертируем unsigned int в строку
+                number = std::to_string(heightNr++); // РєРѕРЅРІРµСЂС‚РёСЂСѓРµРј unsigned int РІ СЃС‚СЂРѕРєСѓ
 
-            // Теперь устанавливаем сэмплер на нужный текстурный юнит
+            // РўРµРїРµСЂСЊ СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃСЌРјРїР»РµСЂ РЅР° РЅСѓР¶РЅС‹Р№ С‚РµРєСЃС‚СѓСЂРЅС‹Р№ СЋРЅРёС‚
             glUniform1i(glGetUniformLocation(shader.ID, (name + number).c_str()), i);
-            // и связываем текстуру
+            // Рё СЃРІСЏР·С‹РІР°РµРј С‚РµРєСЃС‚СѓСЂСѓ
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
 
-        // Отрисовываем mesh
+        // РћС‚СЂРёСЃРѕРІС‹РІР°РµРј mesh
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
 
-        // Считается хорошей практикой возвращать значения переменных к их первоначальным значениям
+        // РЎС‡РёС‚Р°РµС‚СЃСЏ С…РѕСЂРѕС€РµР№ РїСЂР°РєС‚РёРєРѕР№ РІРѕР·РІСЂР°С‰Р°С‚СЊ Р·РЅР°С‡РµРЅРёСЏ РїРµСЂРµРјРµРЅРЅС‹С… Рє РёС… РїРµСЂРІРѕРЅР°С‡Р°Р»СЊРЅС‹Рј Р·РЅР°С‡РµРЅРёСЏРј
         glActiveTexture(GL_TEXTURE0);
     }
 
 private:
-    // Данные для рендеринга 
+    // Р”Р°РЅРЅС‹Рµ РґР»СЏ СЂРµРЅРґРµСЂРёРЅРіР° 
     unsigned int VBO, EBO;
 
-    // Инициализируем все буферные объекты/массивы
+    // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РІСЃРµ Р±СѓС„РµСЂРЅС‹Рµ РѕР±СЉРµРєС‚С‹/РјР°СЃСЃРёРІС‹
     void setupMesh()
     {
-        // Создаем буферные объекты/массивы
+        // РЎРѕР·РґР°РµРј Р±СѓС„РµСЂРЅС‹Рµ РѕР±СЉРµРєС‚С‹/РјР°СЃСЃРёРІС‹
         glGenVertexArrays(1, &VAO);
         glGenBuffers(1, &VBO);
         glGenBuffers(1, &EBO);
 
         glBindVertexArray(VAO);
 
-        // Загружаем данные в вершинный буфер
+        // Р—Р°РіСЂСѓР¶Р°РµРј РґР°РЅРЅС‹Рµ РІ РІРµСЂС€РёРЅРЅС‹Р№ Р±СѓС„РµСЂ
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
-        // Самое замечательное в структурах то, что расположение в памяти их внутренних переменных является последовательным.
-        // Смысл данного трюка в том, что мы можем просто передать указатель на структуру, и она прекрасно преобразуется в массив данных с элементами типа glm::vec3 (или glm::vec2), который затем будет преобразован в массив данных float, ну а в конце – в байтовый массив
+        // РЎР°РјРѕРµ Р·Р°РјРµС‡Р°С‚РµР»СЊРЅРѕРµ РІ СЃС‚СЂСѓРєС‚СѓСЂР°С… С‚Рѕ, С‡С‚Рѕ СЂР°СЃРїРѕР»РѕР¶РµРЅРёРµ РІ РїР°РјСЏС‚Рё РёС… РІРЅСѓС‚СЂРµРЅРЅРёС… РїРµСЂРµРјРµРЅРЅС‹С… СЏРІР»СЏРµС‚СЃСЏ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅС‹Рј.
+        // РЎРјС‹СЃР» РґР°РЅРЅРѕРіРѕ С‚СЂСЋРєР° РІ С‚РѕРј, С‡С‚Рѕ РјС‹ РјРѕР¶РµРј РїСЂРѕСЃС‚Рѕ РїРµСЂРµРґР°С‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ, Рё РѕРЅР° РїСЂРµРєСЂР°СЃРЅРѕ РїСЂРµРѕР±СЂР°Р·СѓРµС‚СЃСЏ РІ РјР°СЃСЃРёРІ РґР°РЅРЅС‹С… СЃ СЌР»РµРјРµРЅС‚Р°РјРё С‚РёРїР° glm::vec3 (РёР»Рё glm::vec2), РєРѕС‚РѕСЂС‹Р№ Р·Р°С‚РµРј Р±СѓРґРµС‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅ РІ РјР°СЃСЃРёРІ РґР°РЅРЅС‹С… float, РЅСѓ Р° РІ РєРѕРЅС†Рµ вЂ“ РІ Р±Р°Р№С‚РѕРІС‹Р№ РјР°СЃСЃРёРІ
         glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
         glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
-        // Устанавливаем указатели вершинных атрибутов
+        // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СѓРєР°Р·Р°С‚РµР»Рё РІРµСЂС€РёРЅРЅС‹С… Р°С‚СЂРёР±СѓС‚РѕРІ
 
-        // Координаты вершин
+        // РљРѕРѕСЂРґРёРЅР°С‚С‹ РІРµСЂС€РёРЅ
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
 
-        // Нормали вершин
+        // РќРѕСЂРјР°Р»Рё РІРµСЂС€РёРЅ
         glEnableVertexAttribArray(1);
         glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Normal));
 
-        // Текстурные координаты вершин
+        // РўРµРєСЃС‚СѓСЂРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РІРµСЂС€РёРЅ
         glEnableVertexAttribArray(2);
         glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, TexCoords));
 
-        // Касательный вектор вершины
+        // РљР°СЃР°С‚РµР»СЊРЅС‹Р№ РІРµРєС‚РѕСЂ РІРµСЂС€РёРЅС‹
         glEnableVertexAttribArray(3);
         glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Tangent));
 
-        // Вектор бинормали вершины
+        // Р’РµРєС‚РѕСЂ Р±РёРЅРѕСЂРјР°Р»Рё РІРµСЂС€РёРЅС‹
         glEnableVertexAttribArray(4);
         glVertexAttribPointer(4, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, Bitangent));
 
