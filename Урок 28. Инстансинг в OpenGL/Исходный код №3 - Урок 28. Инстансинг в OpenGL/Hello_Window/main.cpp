@@ -19,23 +19,23 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
-// настройки
+// РЅР°СЃС‚СЂРѕР№РєРё
 const unsigned int SCR_WIDTH = 600;
 const unsigned int SCR_HEIGHT = 400;
 
-// камера
+// РєР°РјРµСЂР°
 Camera camera(glm::vec3(0.0f, 0.0f, 155.0f));
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
 bool firstMouse = true;
 
-// тайминги
+// С‚Р°Р№РјРёРЅРіРё
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 int main()
 {
-    // glfw: инициализация и конфигурирование
+    // glfw: РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Рё РєРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ
     // ------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -46,7 +46,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    // glfw создание окна
+    // glfw СЃРѕР·РґР°РЅРёРµ РѕРєРЅР°
     // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL for Ravesli.com!", NULL, NULL);
     if (window == NULL)
@@ -60,10 +60,10 @@ int main()
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
-    // говорим GLFW захватить указатель мышки
+    // РіРѕРІРѕСЂРёРј GLFW Р·Р°С…РІР°С‚РёС‚СЊ СѓРєР°Р·Р°С‚РµР»СЊ РјС‹С€РєРё
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    // glad: загрузка всех указателей на OpenGL-функции
+    // glad: Р·Р°РіСЂСѓР·РєР° РІСЃРµС… СѓРєР°Р·Р°С‚РµР»РµР№ РЅР° OpenGL-С„СѓРЅРєС†РёРё
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -71,69 +71,69 @@ int main()
         return -1;
     }
 
-    // конфигурирование глобального состояния OpenGL
+    // РєРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ РіР»РѕР±Р°Р»СЊРЅРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ OpenGL
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
-    // компилирование нашей шейдерной программы
+    // РєРѕРјРїРёР»РёСЂРѕРІР°РЅРёРµ РЅР°С€РµР№ С€РµР№РґРµСЂРЅРѕР№ РїСЂРѕРіСЂР°РјРјС‹
     // -------------------------
     Shader asteroidShader("../10.3.asteroids.vs", "../10.3.asteroids.fs");
     Shader planetShader("../10.3.planet.vs", "../10.3.planet.fs");
 
-    // загрузка моделей
+    // Р·Р°РіСЂСѓР·РєР° РјРѕРґРµР»РµР№
     // -----------
     Model rock("../resources/objects/rock/rock.obj");
     Model planet("../resources/objects/planet/planet.obj");
 
-    // генерируем большой список полу-рандомных матриц трансформаций модели
+    // РіРµРЅРµСЂРёСЂСѓРµРј Р±РѕР»СЊС€РѕР№ СЃРїРёСЃРѕРє РїРѕР»Сѓ-СЂР°РЅРґРѕРјРЅС‹С… РјР°С‚СЂРёС† С‚СЂР°РЅСЃС„РѕСЂРјР°С†РёР№ РјРѕРґРµР»Рё
     // ------------------------------------------------------------------
     unsigned int amount = 100000;
     glm::mat4* modelMatrices;
     modelMatrices = new glm::mat4[amount];
-    srand(glfwGetTime()); // инициализация рандома некоторым значением	
+    srand(glfwGetTime()); // РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЂР°РЅРґРѕРјР° РЅРµРєРѕС‚РѕСЂС‹Рј Р·РЅР°С‡РµРЅРёРµРј	
     float radius = 150.0;
     float offset = 25.0f;
     for (unsigned int i = 0; i < amount; i++)
     {
         glm::mat4 model = glm::mat4(1.0f);
-        // 1. трансляция: смещаем вдоль окружности со значением радиуса в пределах отрезка [-offset, offset]
+        // 1. С‚СЂР°РЅСЃР»СЏС†РёСЏ: СЃРјРµС‰Р°РµРј РІРґРѕР»СЊ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё СЃРѕ Р·РЅР°С‡РµРЅРёРµРј СЂР°РґРёСѓСЃР° РІ РїСЂРµРґРµР»Р°С… РѕС‚СЂРµР·РєР° [-offset, offset]
         float angle = (float)i / (float)amount * 360.0f;
         float displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
         float x = sin(angle) * radius + displacement;
         displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
-        float y = displacement * 0.4f; // уменьшаем высоту пояса астероидов
+        float y = displacement * 0.4f; // СѓРјРµРЅСЊС€Р°РµРј РІС‹СЃРѕС‚Сѓ РїРѕСЏСЃР° Р°СЃС‚РµСЂРѕРёРґРѕРІ
         displacement = (rand() % (int)(2 * offset * 100)) / 100.0f - offset;
         float z = cos(angle) * radius + displacement;
         model = glm::translate(model, glm::vec3(x, y, z));
 
-        // 2. масштабирование: коэффициент масштабирования от 0.05 до 0.25f
+        // 2. РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёРµ: РєРѕСЌС„С„РёС†РёРµРЅС‚ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ РѕС‚ 0.05 РґРѕ 0.25f
         float scale = (rand() % 20) / 100.0f + 0.05;
         model = glm::scale(model, glm::vec3(scale));
 
-        // 3. поворот: добавляем рандомный поворот вокруг (полу)случайно выбранного вектора оси
+        // 3. РїРѕРІРѕСЂРѕС‚: РґРѕР±Р°РІР»СЏРµРј СЂР°РЅРґРѕРјРЅС‹Р№ РїРѕРІРѕСЂРѕС‚ РІРѕРєСЂСѓРі (РїРѕР»Сѓ)СЃР»СѓС‡Р°Р№РЅРѕ РІС‹Р±СЂР°РЅРЅРѕРіРѕ РІРµРєС‚РѕСЂР° РѕСЃРё
         float rotAngle = (rand() % 360);
         model = glm::rotate(model, rotAngle, glm::vec3(0.4f, 0.6f, 0.8f));
 
-        // 4. теперь добавляем к списку матриц
+        // 4. С‚РµРїРµСЂСЊ РґРѕР±Р°РІР»СЏРµРј Рє СЃРїРёСЃРєСѓ РјР°С‚СЂРёС†
         modelMatrices[i] = model;
     }
 
-    // конфигурирование инстанцированного массива
+    // РєРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ РёРЅСЃС‚Р°РЅС†РёСЂРѕРІР°РЅРЅРѕРіРѕ РјР°СЃСЃРёРІР°
     // -------------------------
     unsigned int buffer;
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
 
-    // установливаем матрицы преобразований в качестве инстанцированного атрибута вершины (с делителем 1)
-    // Примечание: мы немного хитрим, принимая публично объявленный VAO меша модели и добавляя новые vertexAttribPointers
-    // это делается исключительно в образовательных целях.
+    // СѓСЃС‚Р°РЅРѕРІР»РёРІР°РµРј РјР°С‚СЂРёС†С‹ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёР№ РІ РєР°С‡РµСЃС‚РІРµ РёРЅСЃС‚Р°РЅС†РёСЂРѕРІР°РЅРЅРѕРіРѕ Р°С‚СЂРёР±СѓС‚Р° РІРµСЂС€РёРЅС‹ (СЃ РґРµР»РёС‚РµР»РµРј 1)
+    // РџСЂРёРјРµС‡Р°РЅРёРµ: РјС‹ РЅРµРјРЅРѕРіРѕ С…РёС‚СЂРёРј, РїСЂРёРЅРёРјР°СЏ РїСѓР±Р»РёС‡РЅРѕ РѕР±СЉСЏРІР»РµРЅРЅС‹Р№ VAO РјРµС€Р° РјРѕРґРµР»Рё Рё РґРѕР±Р°РІР»СЏСЏ РЅРѕРІС‹Рµ vertexAttribPointers
+    // СЌС‚Рѕ РґРµР»Р°РµС‚СЃСЏ РёСЃРєР»СЋС‡РёС‚РµР»СЊРЅРѕ РІ РѕР±СЂР°Р·РѕРІР°С‚РµР»СЊРЅС‹С… С†РµР»СЏС….
     // -----------------------------------------------------------------------------------------------------------------------------------
     for (unsigned int i = 0; i < rock.meshes.size(); i++)
     {
         unsigned int VAO = rock.meshes[i].VAO;
         glBindVertexArray(VAO);
-        // устанавливаем указатели атрибута для матрицы (4 * vec4)
+        // СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј СѓРєР°Р·Р°С‚РµР»Рё Р°С‚СЂРёР±СѓС‚Р° РґР»СЏ РјР°С‚СЂРёС†С‹ (4 * vec4)
         glEnableVertexAttribArray(3);
         glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
         glEnableVertexAttribArray(4);
@@ -151,26 +151,26 @@ int main()
         glBindVertexArray(0);
     }
 
-    // цикл рендеринга
+    // С†РёРєР» СЂРµРЅРґРµСЂРёРЅРіР°
     // -----------
     while (!glfwWindowShouldClose(window))
     {
-        // логическая часть работы со временем для каждого кадра
+        // Р»РѕРіРёС‡РµСЃРєР°СЏ С‡Р°СЃС‚СЊ СЂР°Р±РѕС‚С‹ СЃРѕ РІСЂРµРјРµРЅРµРј РґР»СЏ РєР°Р¶РґРѕРіРѕ РєР°РґСЂР°
         // --------------------
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // обработка ввода
+        // РѕР±СЂР°Р±РѕС‚РєР° РІРІРѕРґР°
         // -----
         processInput(window);
 
-        // рендер
+        // СЂРµРЅРґРµСЂ
         // ------
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // конфигурирование матриц трансформации
+        // РєРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ РјР°С‚СЂРёС† С‚СЂР°РЅСЃС„РѕСЂРјР°С†РёРё
         glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
         glm::mat4 view = camera.GetViewMatrix();
         asteroidShader.use();
@@ -180,18 +180,18 @@ int main()
         planetShader.setMat4("projection", projection);
         planetShader.setMat4("view", view);
 
-        // отрисовка планеты
+        // РѕС‚СЂРёСЃРѕРІРєР° РїР»Р°РЅРµС‚С‹
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(0.0f, -3.0f, 0.0f));
         model = glm::scale(model, glm::vec3(4.0f, 4.0f, 4.0f));
         planetShader.setMat4("model", model);
         planet.Draw(planetShader);
 
-        // отрисовка астероидов
+        // РѕС‚СЂРёСЃРѕРІРєР° Р°СЃС‚РµСЂРѕРёРґРѕРІ
         asteroidShader.use();
         asteroidShader.setInt("texture_diffuse1", 0);
         glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, rock.textures_loaded[0].id); // замечание: мы также объявляем как public- (вместо private- ) вектор textures_loaded.
+        glBindTexture(GL_TEXTURE_2D, rock.textures_loaded[0].id); // Р·Р°РјРµС‡Р°РЅРёРµ: РјС‹ С‚Р°РєР¶Рµ РѕР±СЉСЏРІР»СЏРµРј РєР°Рє public- (РІРјРµСЃС‚Рѕ private- ) РІРµРєС‚РѕСЂ textures_loaded.
         for (unsigned int i = 0; i < rock.meshes.size(); i++)
         {
             glBindVertexArray(rock.meshes[i].VAO);
@@ -199,7 +199,7 @@ int main()
             glBindVertexArray(0);
         }
 
-        // glfw: обмен содержимым переднего и заднего буферов. Опрос событий Ввода\Ввывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
+        // glfw: РѕР±РјРµРЅ СЃРѕРґРµСЂР¶РёРјС‹Рј РїРµСЂРµРґРЅРµРіРѕ Рё Р·Р°РґРЅРµРіРѕ Р±СѓС„РµСЂРѕРІ. РћРїСЂРѕСЃ СЃРѕР±С‹С‚РёР№ Р’РІРѕРґР°\Р’РІС‹РІРѕРґР° (Р±С‹Р»Р° Р»Рё РЅР°Р¶Р°С‚Р°/РѕС‚РїСѓС‰РµРЅР° РєРЅРѕРїРєР°, РїРµСЂРµРјРµС‰РµРЅ РєСѓСЂСЃРѕСЂ РјС‹С€Рё Рё С‚.Рї.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -209,7 +209,7 @@ int main()
     return 0;
 }
 
-// Обработка всех событий ввода: запрос GLFW о нажатии/отпускании кнопки мыши в данном кадре и соответствующая обработка данных событий
+// РћР±СЂР°Р±РѕС‚РєР° РІСЃРµС… СЃРѕР±С‹С‚РёР№ РІРІРѕРґР°: Р·Р°РїСЂРѕСЃ GLFW Рѕ РЅР°Р¶Р°С‚РёРё/РѕС‚РїСѓСЃРєР°РЅРёРё РєРЅРѕРїРєРё РјС‹С€Рё РІ РґР°РЅРЅРѕРј РєР°РґСЂРµ Рё СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰Р°СЏ РѕР±СЂР°Р±РѕС‚РєР° РґР°РЅРЅС‹С… СЃРѕР±С‹С‚РёР№
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window)
 {
@@ -226,16 +226,16 @@ void processInput(GLFWwindow* window)
         camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
-// glfw: всякий раз, когда изменяются размеры окна (пользователем или опер. системой), вызывается данная функция
+// glfw: РІСЃСЏРєРёР№ СЂР°Р·, РєРѕРіРґР° РёР·РјРµРЅСЏСЋС‚СЃСЏ СЂР°Р·РјРµСЂС‹ РѕРєРЅР° (РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј РёР»Рё РѕРїРµСЂ. СЃРёСЃС‚РµРјРѕР№), РІС‹Р·С‹РІР°РµС‚СЃСЏ РґР°РЅРЅР°СЏ С„СѓРЅРєС†РёСЏ
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // убеждаемся, что вьюпорт соответствует новым размерам окна; обратите внимание,
-    // что ширина и высота будут значительно больше, чем указано на retina -дисплеях.
+    // СѓР±РµР¶РґР°РµРјСЃСЏ, С‡С‚Рѕ РІСЊСЋРїРѕСЂС‚ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ РЅРѕРІС‹Рј СЂР°Р·РјРµСЂР°Рј РѕРєРЅР°; РѕР±СЂР°С‚РёС‚Рµ РІРЅРёРјР°РЅРёРµ,
+    // С‡С‚Рѕ С€РёСЂРёРЅР° Рё РІС‹СЃРѕС‚Р° Р±СѓРґСѓС‚ Р·РЅР°С‡РёС‚РµР»СЊРЅРѕ Р±РѕР»СЊС€Рµ, С‡РµРј СѓРєР°Р·Р°РЅРѕ РЅР° retina -РґРёСЃРїР»РµСЏС….
     glViewport(0, 0, width, height);
 }
 
-// glfw: всякий раз, когда перемещается мышь, вызывается данная callback-функция
+// glfw: РІСЃСЏРєРёР№ СЂР°Р·, РєРѕРіРґР° РїРµСЂРµРјРµС‰Р°РµС‚СЃСЏ РјС‹С€СЊ, РІС‹Р·С‹РІР°РµС‚СЃСЏ РґР°РЅРЅР°СЏ callback-С„СѓРЅРєС†РёСЏ
 // -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
@@ -247,7 +247,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     }
 
     float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // перевернуто, так как Y-координаты идут снизу вверх
+    float yoffset = lastY - ypos; // РїРµСЂРµРІРµСЂРЅСѓС‚Рѕ, С‚Р°Рє РєР°Рє Y-РєРѕРѕСЂРґРёРЅР°С‚С‹ РёРґСѓС‚ СЃРЅРёР·Сѓ РІРІРµСЂС…
 
     lastX = xpos;
     lastY = ypos;
@@ -255,7 +255,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
-// glfw: всякий раз, когда прокручивается колесико мыши, вызывается данная callback-функция
+// glfw: РІСЃСЏРєРёР№ СЂР°Р·, РєРѕРіРґР° РїСЂРѕРєСЂСѓС‡РёРІР°РµС‚СЃСЏ РєРѕР»РµСЃРёРєРѕ РјС‹С€Рё, РІС‹Р·С‹РІР°РµС‚СЃСЏ РґР°РЅРЅР°СЏ callback-С„СѓРЅРєС†РёСЏ
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
