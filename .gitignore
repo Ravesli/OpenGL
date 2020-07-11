@@ -68,7 +68,12 @@ StyleCopReport.xml
 *_h.h
 *.ilk
 *.meta
-# *.obj
+*.obj
+
+# Загружать файлы моделей
+!*/resources/**/*.obj
+!**/resources/**/*.obj
+
 *.iobj
 *.pch
 *.pdb
