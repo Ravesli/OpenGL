@@ -13,34 +13,34 @@ class Shader
 {
 public:
     unsigned int ID;
-    // конструктор генерирует шейдер на лету
+    // РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РіРµРЅРµСЂРёСЂСѓРµС‚ С€РµР№РґРµСЂ РЅР° Р»РµС‚Сѓ
     // ------------------------------------------------------------------------
     Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr)
     {
-        // 1. получение исходного кода вершинного/фрагментного шейдера
+        // 1. РїРѕР»СѓС‡РµРЅРёРµ РёСЃС…РѕРґРЅРѕРіРѕ РєРѕРґР° РІРµСЂС€РёРЅРЅРѕРіРѕ/С„СЂР°РіРјРµРЅС‚РЅРѕРіРѕ С€РµР№РґРµСЂР°
         std::string vertexCode;
         std::string fragmentCode;
         std::string geometryCode;
         std::ifstream vShaderFile;
         std::ifstream fShaderFile;
         std::ifstream gShaderFile;
-        // убеждаемся, что объекты ifstream могут выбросить исключение:
+        // СѓР±РµР¶РґР°РµРјСЃСЏ, С‡С‚Рѕ РѕР±СЉРµРєС‚С‹ ifstream РјРѕРіСѓС‚ РІС‹Р±СЂРѕСЃРёС‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ:
         vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         try
         {
-            // открываем файлы
+            // РѕС‚РєСЂС‹РІР°РµРј С„Р°Р№Р»С‹
             vShaderFile.open(vertexPath);
             fShaderFile.open(fragmentPath);
             std::stringstream vShaderStream, fShaderStream;
-            // читаем содержимое файловых буферов
+            // С‡РёС‚Р°РµРј СЃРѕРґРµСЂР¶РёРјРѕРµ С„Р°Р№Р»РѕРІС‹С… Р±СѓС„РµСЂРѕРІ
             vShaderStream << vShaderFile.rdbuf();
             fShaderStream << fShaderFile.rdbuf();
-            // закрываем файлы
+            // Р·Р°РєСЂС‹РІР°РµРј С„Р°Р№Р»С‹
             vShaderFile.close();
             fShaderFile.close();
-            // конвертируем в строковую переменную данные из потока
+            // РєРѕРЅРІРµСЂС‚РёСЂСѓРµРј РІ СЃС‚СЂРѕРєРѕРІСѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ РґР°РЅРЅС‹Рµ РёР· РїРѕС‚РѕРєР°
             vertexCode = vShaderStream.str();
             fragmentCode = fShaderStream.str();
             // if geometry shader path is present, also load a geometry shader
@@ -59,19 +59,19 @@ public:
         }
         const char* vShaderCode = vertexCode.c_str();
         const char* fShaderCode = fragmentCode.c_str();
-        // 2. компилируем шейдеры
+        // 2. РєРѕРјРїРёР»РёСЂСѓРµРј С€РµР№РґРµСЂС‹
         unsigned int vertex, fragment;
-        // вершинный шейдер
+        // РІРµСЂС€РёРЅРЅС‹Р№ С€РµР№РґРµСЂ
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, NULL);
         glCompileShader(vertex);
         checkCompileErrors(vertex, "VERTEX");
-        // Фрагментный шейдер
+        // Р¤СЂР°РіРјРµРЅС‚РЅС‹Р№ С€РµР№РґРµСЂ
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment, 1, &fShaderCode, NULL);
         glCompileShader(fragment);
         checkCompileErrors(fragment, "FRAGMENT");
-        // Если был дан геометрический шейдер, то компилируем его
+        // Р•СЃР»Рё Р±С‹Р» РґР°РЅ РіРµРѕРјРµС‚СЂРёС‡РµСЃРєРёР№ С€РµР№РґРµСЂ, С‚Рѕ РєРѕРјРїРёР»РёСЂСѓРµРј РµРіРѕ
         unsigned int geometry;
         if (geometryPath != nullptr)
         {
@@ -81,7 +81,7 @@ public:
             glCompileShader(geometry);
             checkCompileErrors(geometry, "GEOMETRY");
         }
-        // Шейдерная программа
+        // РЁРµР№РґРµСЂРЅР°СЏ РїСЂРѕРіСЂР°РјРјР°
         ID = glCreateProgram();
         glAttachShader(ID, vertex);
         glAttachShader(ID, fragment);
@@ -89,19 +89,19 @@ public:
         if (geometryPath != nullptr)
             glAttachShader(ID, geometry);
         checkCompileErrors(ID, "PROGRAM");
-        // После того, как мы связали шейдеры с нашей программой, удаляем их, т.к. они больше не нужны
+        // РџРѕСЃР»Рµ С‚РѕРіРѕ, РєР°Рє РјС‹ СЃРІСЏР·Р°Р»Рё С€РµР№РґРµСЂС‹ СЃ РЅР°С€РµР№ РїСЂРѕРіСЂР°РјРјРѕР№, СѓРґР°Р»СЏРµРј РёС…, С‚.Рє. РѕРЅРё Р±РѕР»СЊС€Рµ РЅРµ РЅСѓР¶РЅС‹
         glDeleteShader(vertex);
         glDeleteShader(fragment);
         if (geometryPath != nullptr)
             glDeleteShader(geometry);
     }
-    // активация шейдера
+    // Р°РєС‚РёРІР°С†РёСЏ С€РµР№РґРµСЂР°
     // ------------------------------------------------------------------------
     void use() const
     {
         glUseProgram(ID);
     }
-    // полезные uniform-функции
+    // РїРѕР»РµР·РЅС‹Рµ uniform-С„СѓРЅРєС†РёРё
     // ------------------------------------------------------------------------
     void setBool(const std::string& name, bool value) const
     {
@@ -161,7 +161,7 @@ public:
     }
 
 private:
-    // полезные функции для проверки ошибок компиляции/связывания шейдеров.
+    // РїРѕР»РµР·РЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ РїСЂРѕРІРµСЂРєРё РѕС€РёР±РѕРє РєРѕРјРїРёР»СЏС†РёРё/СЃРІСЏР·С‹РІР°РЅРёСЏ С€РµР№РґРµСЂРѕРІ.
     // ------------------------------------------------------------------------
     void checkCompileErrors(GLuint shader, std::string type)
     {
