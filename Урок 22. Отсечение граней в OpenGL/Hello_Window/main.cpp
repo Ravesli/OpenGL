@@ -237,8 +237,8 @@ void processInput(GLFWwindow* window)
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // make sure the viewport matches the new window dimensions; note that width and 
-    // height will be significantly larger than specified on retina displays.
+    // убеждаемся, что вьюпорт соответствует новым размерам окна; обратите внимание,
+    // что ширина и высота будут значительно больше, чем указано на retina -дисплеях.
     glViewport(0, 0, width, height);
 }
 
