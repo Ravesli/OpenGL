@@ -85,9 +85,9 @@ public:
         ID = glCreateProgram();
         glAttachShader(ID, vertex);
         glAttachShader(ID, fragment);
-        glLinkProgram(ID);
         if (geometryPath != nullptr)
             glAttachShader(ID, geometry);
+        glLinkProgram(ID);
         checkCompileErrors(ID, "PROGRAM");
         // После того, как мы связали шейдеры с нашей программой, удаляем их, т.к. они больше не нужны
         glDeleteShader(vertex);
