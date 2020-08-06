@@ -157,13 +157,13 @@ int main()
     // -----------
     while (!glfwWindowShouldClose(window))
     {
-        // цикл рендеринга
+        // логическая часть работы со временем для каждого кадра
         // --------------------
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // логическая часть работы со временем для каждого кадра
+        // обработка ввода
         // -----
         processInput(window);
 
