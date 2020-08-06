@@ -349,7 +349,7 @@ void renderCube()
     glBindVertexArray(0);
 }
 
-// renderQuad() рендерит1x1 XY прямоугольник/плоскость в NDC
+// renderQuad() рендерит 1x1 XY прямоугольник/плоскость в NDC
 // -----------------------------------------
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
