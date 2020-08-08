@@ -18,13 +18,13 @@ float ShadowCalculation(vec4 fragPosLightSpace)
 {
     // выполняем деление перспективы
     vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-    // трансформируем в диапазон [0,1]
+    // преобразуем в диапазон [0,1]
     projCoords = projCoords * 0.5 + 0.5;
-    // получаем наиболее близкое значение глубины исходя из перспективы глазами источника света (используя в диапазон [0,1] fragPosLight в качестве координат)
+    // получаем наиболее близкое значение глубины исходя из перспективы глазами источника света (используя диапазон [0,1] fragPosLight в качестве координат)
     float closestDepth = texture(shadowMap, projCoords.xy).r; 
     // получаем глубину текущего фрагмента исходя из перспективы глазами источника света
     float currentDepth = projCoords.z;
-    // вычисляем смещение (на основе разрешения карты глубины и наклона)
+    // проверяем, находится ли текущий фрагмент в тени
     float shadow = currentDepth > closestDepth  ? 1.0 : 0.0;
 
     return shadow;
