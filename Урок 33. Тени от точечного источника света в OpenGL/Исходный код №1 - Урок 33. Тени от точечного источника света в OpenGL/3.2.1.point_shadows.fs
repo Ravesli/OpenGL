@@ -20,14 +20,14 @@ float ShadowCalculation(vec3 fragPos)
 {
     // получаем вектор между положением фрагмента и положением источника света
     vec3 fragToLight = fragPos - lightPos;
-    // use the fragment to light vector to sample from the depth map    
+    // используем полученный вектор для выборки из карты глубины    
     float closestDepth = texture(depthMap, fragToLight).r;
     // в данный момент значения лежат в диапазоне [0,1]. Преобразуем их обратно к исходным значениям
     closestDepth *= far_plane;
     // теперь получим текущую линейную глубину как длину между фрагментом и положением источника света
     float currentDepth = length(fragToLight);
     // теперь проводим проверку на нахождение в тени
-    float bias = 0.05; // we use a much larger bias since depth is now in [near_plane, far_plane] range
+    float bias = 0.05; // мы используем гораздо большее теневое смещение, так как значение глубины теперь находится в  диапазоне [near_plane, far_plane]
     float shadow = currentDepth -  bias > closestDepth ? 1.0 : 0.0;        
     // отладка - отображение значений переменной  closestDepth (для визуализации кубической карты глубины)
     // FragColor = vec4(vec3(closestDepth / far_plane), 1.0);    
