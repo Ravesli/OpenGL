@@ -127,11 +127,11 @@ int main()
         shader.setMat4("view", view);
         // рендеринг прямоугольника с параллакс-эффектом
         glm::mat4 model = glm::mat4(1.0f);
-        model = glm::rotate(model, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0))); // rotate the quad to show parallax mapping from multiple directions
+        model = glm::rotate(model, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0))); // поворачиваем прямоугольник для демонстрации работы параллакс отображения со всех сторон
         shader.setMat4("model", model);
         shader.setVec3("viewPos", camera.Position);
         shader.setVec3("lightPos", lightPos);
-        shader.setFloat("heightScale", heightScale); // adjust with Q and E keys
+        shader.setFloat("heightScale", heightScale); // изменение значений кнопками Q и E
         std::cout << heightScale << std::endl;
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, diffuseMap);
