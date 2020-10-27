@@ -112,7 +112,7 @@ void main()
         vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);
            
         vec3 nominator    = NDF * G * F; 
-        float denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001; // 0.001 to prevent divide by zero.
+        float denominator = 4 * max(dot(N, V), 0.0) * max(dot(N, L), 0.0) + 0.001; // прибавляем 0.001 чтобы избежать деления на ноль.
         vec3 specular = nominator / denominator;
         
         // kS эквивалентно коэффициенту Френеля
@@ -126,10 +126,10 @@ void main()
         // не имеют диффузного освещения).
         kD *= 1.0 - metallic;	  
 
-        // добавляем к исходящей энергитической яркости Lo
+        // масштабируем освещенность при помощи NdotL
         float NdotL = max(dot(N, L), 0.0);        
 
-        // add to outgoing radiance Lo
+        // добавляем к исходящей энергитической яркости Lo
         Lo += (kD * albedo / PI + specular) * radiance * NdotL;  // обратите внимани, что мы уже умножали BRDF на коэффициент Френеля(kS), поэтому нам не нужно снова умножать на kS
     }   
     
