@@ -21,23 +21,23 @@ void renderSphere();
 void renderCube();
 void renderQuad();
 
-// настройки
+// РЅР°СЃС‚СЂРѕР№РєРё
 const unsigned int SCR_WIDTH = 1280;
 const unsigned int SCR_HEIGHT = 720;
 
-// камера
+// РєР°РјРµСЂР°
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = 800.0f / 2.0;
 float lastY = 600.0 / 2.0;
 bool firstMouse = true;
 
-// тайминги
+// С‚Р°Р№РјРёРЅРіРё
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 int main()
 {
-    // glfw: инициализация и конфигурирование
+    // glfw: РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Рё РєРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ
     // ------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -49,7 +49,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    // glfw: создание окна
+    // glfw: СЃРѕР·РґР°РЅРёРµ РѕРєРЅР°
     // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL for Ravesli.com!", NULL, NULL);
     glfwMakeContextCurrent(window);
@@ -63,10 +63,10 @@ int main()
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
-    // говорим GLFW захватить курсор нашей мышки
+    // РіРѕРІРѕСЂРёРј GLFW Р·Р°С…РІР°С‚РёС‚СЊ РєСѓСЂСЃРѕСЂ РЅР°С€РµР№ РјС‹С€РєРё
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    // glad: загрузка всех указателей на OpenGL-функции
+    // glad: Р·Р°РіСЂСѓР·РєР° РІСЃРµС… СѓРєР°Р·Р°С‚РµР»РµР№ РЅР° OpenGL-С„СѓРЅРєС†РёРё
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
@@ -74,15 +74,15 @@ int main()
         return -1;
     }
 
-    // конфигурирование глобального состояния OpenGL
+    // РєРѕРЅС„РёРіСѓСЂРёСЂРѕРІР°РЅРёРµ РіР»РѕР±Р°Р»СЊРЅРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёСЏ OpenGL
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
-    // задаём функцию сравнения глубины типа "меньше или равно" для трюка со скайбоксом.
+    // Р·Р°РґР°С‘Рј С„СѓРЅРєС†РёСЋ СЃСЂР°РІРЅРµРЅРёСЏ РіР»СѓР±РёРЅС‹ С‚РёРїР° "РјРµРЅСЊС€Рµ РёР»Рё СЂР°РІРЅРѕ" РґР»СЏ С‚СЂСЋРєР° СЃРѕ СЃРєР°Р№Р±РѕРєСЃРѕРј.
     glDepthFunc(GL_LEQUAL);
-    // включаем бесшовный сэмплинг кубической карты для нижних mip-уровней в предварительно отфильтрованной карте
+    // РІРєР»СЋС‡Р°РµРј Р±РµСЃС€РѕРІРЅС‹Р№ СЃСЌРјРїР»РёРЅРі РєСѓР±РёС‡РµСЃРєРѕР№ РєР°СЂС‚С‹ РґР»СЏ РЅРёР¶РЅРёС… mip-СѓСЂРѕРІРЅРµР№ РІ РїСЂРµРґРІР°СЂРёС‚РµР»СЊРЅРѕ РѕС‚С„РёР»СЊС‚СЂРѕРІР°РЅРЅРѕР№ РєР°СЂС‚Рµ
     glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
-    // компилирование нашей шейдерной программы
+    // РєРѕРјРїРёР»РёСЂРѕРІР°РЅРёРµ РЅР°С€РµР№ С€РµР№РґРµСЂРЅРѕР№ РїСЂРѕРіСЂР°РјРјС‹
     // -------------------------
     Shader pbrShader("../2.2.2.pbr.vs", "../2.2.2.pbr.fs");
     Shader equirectangularToCubemapShader("../2.2.2.cubemap.vs", "../2.2.2.equirectangular_to_cubemap.fs");
@@ -104,44 +104,44 @@ int main()
     backgroundShader.use();
     backgroundShader.setInt("environmentMap", 0);
 
-    // загрузка текстур PBR-материалов
+    // Р·Р°РіСЂСѓР·РєР° С‚РµРєСЃС‚СѓСЂ PBR-РјР°С‚РµСЂРёР°Р»РѕРІ
     // --------------------------
-    // ржавое железо
+    // СЂР¶Р°РІРѕРµ Р¶РµР»РµР·Рѕ
     unsigned int ironAlbedoMap = loadTexture("../resources/textures/pbr/rusted_iron/albedo.png");
     unsigned int ironNormalMap = loadTexture("../resources/textures/pbr/rusted_iron/normal.png");
     unsigned int ironMetallicMap = loadTexture("../resources/textures/pbr/rusted_iron/metallic.png");
     unsigned int ironRoughnessMap = loadTexture("../resources/textures/pbr/rusted_iron/roughness.png");
     unsigned int ironAOMap = loadTexture("../resources/textures/pbr/rusted_iron/ao.png");
 
-    // золото
+    // Р·РѕР»РѕС‚Рѕ
     unsigned int goldAlbedoMap = loadTexture("../resources/textures/pbr/gold/albedo.png");
     unsigned int goldNormalMap = loadTexture("../resources/textures/pbr/gold/normal.png");
     unsigned int goldMetallicMap = loadTexture("../resources/textures/pbr/gold/metallic.png");
     unsigned int goldRoughnessMap = loadTexture("../resources/textures/pbr/gold/roughness.png");
     unsigned int goldAOMap = loadTexture("../resources/textures/pbr/gold/ao.png");
 
-    // трава
+    // С‚СЂР°РІР°
     unsigned int grassAlbedoMap = loadTexture("../resources/textures/pbr/grass/albedo.png");
     unsigned int grassNormalMap = loadTexture("../resources/textures/pbr/grass/normal.png");
     unsigned int grassMetallicMap = loadTexture("../resources/textures/pbr/grass/metallic.png");
     unsigned int grassRoughnessMap = loadTexture("../resources/textures/pbr/grass/roughness.png");
     unsigned int grassAOMap = loadTexture("../resources/textures/pbr/grass/ao.png");
 
-    // пластик
+    // РїР»Р°СЃС‚РёРє
     unsigned int plasticAlbedoMap = loadTexture("../resources/textures/pbr/plastic/albedo.png");
     unsigned int plasticNormalMap = loadTexture("../resources/textures/pbr/plastic/normal.png");
     unsigned int plasticMetallicMap = loadTexture("../resources/textures/pbr/plastic/metallic.png");
     unsigned int plasticRoughnessMap = loadTexture("../resources/textures/pbr/plastic/roughness.png");
     unsigned int plasticAOMap = loadTexture("../resources/textures/pbr/plastic/ao.png");
 
-    // кирпичная стена
+    // РєРёСЂРїРёС‡РЅР°СЏ СЃС‚РµРЅР°
     unsigned int wallAlbedoMap = loadTexture("../resources/textures/pbr/wall/albedo.png");
     unsigned int wallNormalMap = loadTexture("../resources/textures/pbr/wall/normal.png");
     unsigned int wallMetallicMap = loadTexture("../resources/textures/pbr/wall/metallic.png");
     unsigned int wallRoughnessMap = loadTexture("../resources/textures/pbr/wall/roughness.png");
     unsigned int wallAOMap = loadTexture("../resources/textures/pbr/wall/ao.png");
 
-    // освещение
+    // РѕСЃРІРµС‰РµРЅРёРµ
     // ------
     glm::vec3 lightPositions[] = {
         glm::vec3(-10.0f,  10.0f, 10.0f),
@@ -156,7 +156,7 @@ int main()
         glm::vec3(300.0f, 300.0f, 300.0f)
     };
 
-    // pbr: настройка фреймбуфера
+    // pbr: РЅР°СЃС‚СЂРѕР№РєР° С„СЂРµР№РјР±СѓС„РµСЂР°
     // ----------------------
     unsigned int captureFBO;
     unsigned int captureRBO;
@@ -168,7 +168,7 @@ int main()
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, captureRBO);
 
-    // pbr: загрузка HDR-карты окружения
+    // pbr: Р·Р°РіСЂСѓР·РєР° HDR-РєР°СЂС‚С‹ РѕРєСЂСѓР¶РµРЅРёСЏ
     // ---------------------------------
     stbi_set_flip_vertically_on_load(true);
     int width, height, nrComponents;
@@ -178,7 +178,7 @@ int main()
     {
         glGenTextures(1, &hdrTexture);
         glBindTexture(GL_TEXTURE_2D, hdrTexture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data); // обратите внимание, что мы указываем значение данных текстуры как float
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGB, GL_FLOAT, data); // РѕР±СЂР°С‚РёС‚Рµ РІРЅРёРјР°РЅРёРµ, С‡С‚Рѕ РјС‹ СѓРєР°Р·С‹РІР°РµРј Р·РЅР°С‡РµРЅРёРµ РґР°РЅРЅС‹С… С‚РµРєСЃС‚СѓСЂС‹ РєР°Рє float
 
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
@@ -192,7 +192,7 @@ int main()
         std::cout << "Failed to load HDR image." << std::endl;
     }
 
-    // pbr: настройка кубической карты для рендеринга и прикрепления к фреймбуферу
+    // pbr: РЅР°СЃС‚СЂРѕР№РєР° РєСѓР±РёС‡РµСЃРєРѕР№ РєР°СЂС‚С‹ РґР»СЏ СЂРµРЅРґРµСЂРёРЅРіР° Рё РїСЂРёРєСЂРµРїР»РµРЅРёСЏ Рє С„СЂРµР№РјР±СѓС„РµСЂСѓ
     // ---------------------------------------------------------
     unsigned int envCubemap;
     glGenTextures(1, &envCubemap);
@@ -204,10 +204,10 @@ int main()
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // включаем сэмплирование пре-фильтрованной mip-карты (для борьбы с артефактами в виде визуальных точек)
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // РІРєР»СЋС‡Р°РµРј СЃСЌРјРїР»РёСЂРѕРІР°РЅРёРµ РїСЂРµ-С„РёР»СЊС‚СЂРѕРІР°РЅРЅРѕР№ mip-РєР°СЂС‚С‹ (РґР»СЏ Р±РѕСЂСЊР±С‹ СЃ Р°СЂС‚РµС„Р°РєС‚Р°РјРё РІ РІРёРґРµ РІРёР·СѓР°Р»СЊРЅС‹С… С‚РѕС‡РµРє)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    // pbr: установка матриц проекции и вида для захвата данных по всем 6 направлениям граней кубической карты
+    // pbr: СѓСЃС‚Р°РЅРѕРІРєР° РјР°С‚СЂРёС† РїСЂРѕРµРєС†РёРё Рё РІРёРґР° РґР»СЏ Р·Р°С…РІР°С‚Р° РґР°РЅРЅС‹С… РїРѕ РІСЃРµРј 6 РЅР°РїСЂР°РІР»РµРЅРёСЏРј РіСЂР°РЅРµР№ РєСѓР±РёС‡РµСЃРєРѕР№ РєР°СЂС‚С‹
     // ----------------------------------------------------------------------------------------------
     glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
     glm::mat4 captureViews[] =
@@ -220,7 +220,7 @@ int main()
         glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
     };
 
-    // pbr: конвертирование равнопромежуточной HDR-карты окружения в кубическую
+    // pbr: РєРѕРЅРІРµСЂС‚РёСЂРѕРІР°РЅРёРµ СЂР°РІРЅРѕРїСЂРѕРјРµР¶СѓС‚РѕС‡РЅРѕР№ HDR-РєР°СЂС‚С‹ РѕРєСЂСѓР¶РµРЅРёСЏ РІ РєСѓР±РёС‡РµСЃРєСѓСЋ
     // ----------------------------------------------------------------------
     equirectangularToCubemapShader.use();
     equirectangularToCubemapShader.setInt("equirectangularMap", 0);
@@ -228,7 +228,7 @@ int main()
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, hdrTexture);
 
-    glViewport(0, 0, 512, 512); // не забудьте настроить видовой экран в соответствии с размерами захвата.
+    glViewport(0, 0, 512, 512); // РЅРµ Р·Р°Р±СѓРґСЊС‚Рµ РЅР°СЃС‚СЂРѕРёС‚СЊ РІРёРґРѕРІРѕР№ СЌРєСЂР°РЅ РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ СЂР°Р·РјРµСЂР°РјРё Р·Р°С…РІР°С‚Р°.
     glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
     for (unsigned int i = 0; i < 6; ++i)
     {
@@ -240,11 +240,11 @@ int main()
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // далее позволим OpenGL сгенерировать mip-карты (для борьбы с артефактами в виде визуальных точек)
+    // РґР°Р»РµРµ РїРѕР·РІРѕР»РёРј OpenGL СЃРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ mip-РєР°СЂС‚С‹ (РґР»СЏ Р±РѕСЂСЊР±С‹ СЃ Р°СЂС‚РµС„Р°РєС‚Р°РјРё РІ РІРёРґРµ РІРёР·СѓР°Р»СЊРЅС‹С… С‚РѕС‡РµРє)
     glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
-    // pbr: создаём кубическую карту облученности, и приводим размеры захвата FBO к размерам карты облученности.
+    // pbr: СЃРѕР·РґР°С‘Рј РєСѓР±РёС‡РµСЃРєСѓСЋ РєР°СЂС‚Сѓ РѕР±Р»СѓС‡РµРЅРЅРѕСЃС‚Рё, Рё РїСЂРёРІРѕРґРёРј СЂР°Р·РјРµСЂС‹ Р·Р°С…РІР°С‚Р° FBO Рє СЂР°Р·РјРµСЂР°Рј РєР°СЂС‚С‹ РѕР±Р»СѓС‡РµРЅРЅРѕСЃС‚Рё.
     // --------------------------------------------------------------------------------
     unsigned int irradianceMap;
     glGenTextures(1, &irradianceMap);
@@ -263,7 +263,7 @@ int main()
     glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 32, 32);
 
-    // pbr: решаем диффузный интеграл, применяя операцию свертки для создания кубической карты облученности.
+    // pbr: СЂРµС€Р°РµРј РґРёС„С„СѓР·РЅС‹Р№ РёРЅС‚РµРіСЂР°Р», РїСЂРёРјРµРЅСЏСЏ РѕРїРµСЂР°С†РёСЋ СЃРІРµСЂС‚РєРё РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РєСѓР±РёС‡РµСЃРєРѕР№ РєР°СЂС‚С‹ РѕР±Р»СѓС‡РµРЅРЅРѕСЃС‚Рё.
     // -----------------------------------------------------------------------------
     irradianceShader.use();
     irradianceShader.setInt("environmentMap", 0);
@@ -271,7 +271,7 @@ int main()
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
 
-    glViewport(0, 0, 32, 32); // не забудьте настроить видовой экран на размеры захвата.
+    glViewport(0, 0, 32, 32); // РЅРµ Р·Р°Р±СѓРґСЊС‚Рµ РЅР°СЃС‚СЂРѕРёС‚СЊ РІРёРґРѕРІРѕР№ СЌРєСЂР°РЅ РЅР° СЂР°Р·РјРµСЂС‹ Р·Р°С…РІР°С‚Р°.
     glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
     for (unsigned int i = 0; i < 6; ++i)
     {
@@ -283,7 +283,7 @@ int main()
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // pbr: создаём пре-фильтрованную кубическую карту, и приводим размеры захвата FBO к размерам пре-фильтрованной карты
+    // pbr: СЃРѕР·РґР°С‘Рј РїСЂРµ-С„РёР»СЊС‚СЂРѕРІР°РЅРЅСѓСЋ РєСѓР±РёС‡РµСЃРєСѓСЋ РєР°СЂС‚Сѓ, Рё РїСЂРёРІРѕРґРёРј СЂР°Р·РјРµСЂС‹ Р·Р°С…РІР°С‚Р° FBO Рє СЂР°Р·РјРµСЂР°Рј РїСЂРµ-С„РёР»СЊС‚СЂРѕРІР°РЅРЅРѕР№ РєР°СЂС‚С‹
     // --------------------------------------------------------------------------------
     unsigned int prefilterMap;
     glGenTextures(1, &prefilterMap);
@@ -295,12 +295,12 @@ int main()
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // убеждаемся, что фильтр уменьшения задан как mip_linear 
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR); // СѓР±РµР¶РґР°РµРјСЃСЏ, С‡С‚Рѕ С„РёР»СЊС‚СЂ СѓРјРµРЅСЊС€РµРЅРёСЏ Р·Р°РґР°РЅ РєР°Рє mip_linear 
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    // генерируем mip-карты для кубической карты, OpenGL автоматически выделит нужное количество памяти.
+    // РіРµРЅРµСЂРёСЂСѓРµРј mip-РєР°СЂС‚С‹ РґР»СЏ РєСѓР±РёС‡РµСЃРєРѕР№ РєР°СЂС‚С‹, OpenGL Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё РІС‹РґРµР»РёС‚ РЅСѓР¶РЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РїР°РјСЏС‚Рё.
     glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 
-    // pbr: применяем симуляцию квази Монте-Карло для освещения окружающей среды, чтобы создать пре-фильтрованную (кубическую)карту
+    // pbr: РїСЂРёРјРµРЅСЏРµРј СЃРёРјСѓР»СЏС†РёСЋ РєРІР°Р·Рё РњРѕРЅС‚Рµ-РљР°СЂР»Рѕ РґР»СЏ РѕСЃРІРµС‰РµРЅРёСЏ РѕРєСЂСѓР¶Р°СЋС‰РµР№ СЃСЂРµРґС‹, С‡С‚РѕР±С‹ СЃРѕР·РґР°С‚СЊ РїСЂРµ-С„РёР»СЊС‚СЂРѕРІР°РЅРЅСѓСЋ (РєСѓР±РёС‡РµСЃРєСѓСЋ)РєР°СЂС‚Сѓ
     // ----------------------------------------------------------------------------------------------------
     prefilterShader.use();
     prefilterShader.setInt("environmentMap", 0);
@@ -312,7 +312,7 @@ int main()
     unsigned int maxMipLevels = 5;
     for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
     {
-        // изменяем размеры фреймбуфера framebuffer в соответствии с размерами mip-карты.
+        // РёР·РјРµРЅСЏРµРј СЂР°Р·РјРµСЂС‹ С„СЂРµР№РјР±СѓС„РµСЂР° framebuffer РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ СЂР°Р·РјРµСЂР°РјРё mip-РєР°СЂС‚С‹.
         unsigned int mipWidth = 128 * std::pow(0.5, mip);
         unsigned int mipHeight = 128 * std::pow(0.5, mip);
         glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
@@ -332,21 +332,21 @@ int main()
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // pbr: генерируем 2D LUT-текстуру при помощи используемых уравнений BRDF.
+    // pbr: РіРµРЅРµСЂРёСЂСѓРµРј 2D LUT-С‚РµРєСЃС‚СѓСЂСѓ РїСЂРё РїРѕРјРѕС‰Рё РёСЃРїРѕР»СЊР·СѓРµРјС‹С… СѓСЂР°РІРЅРµРЅРёР№ BRDF.
     // ----------------------------------------------------
     unsigned int brdfLUTTexture;
     glGenTextures(1, &brdfLUTTexture);
 
-    // выделяем необходимое количество памяти для LUT-текстуры.
+    // РІС‹РґРµР»СЏРµРј РЅРµРѕР±С…РѕРґРёРјРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РїР°РјСЏС‚Рё РґР»СЏ LUT-С‚РµРєСЃС‚СѓСЂС‹.
     glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, 0);
-    // убеждаемся, что режим наложения задан как GL_CLAMP_TO_EDGE
+    // СѓР±РµР¶РґР°РµРјСЃСЏ, С‡С‚Рѕ СЂРµР¶РёРј РЅР°Р»РѕР¶РµРЅРёСЏ Р·Р°РґР°РЅ РєР°Рє GL_CLAMP_TO_EDGE
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-    // затем переконфигурируем захват объекта фреймбуфера и рендерим экранный прямоугольник с использованием BRDF-шейдера.
+    // Р·Р°С‚РµРј РїРµСЂРµРєРѕРЅС„РёРіСѓСЂРёСЂСѓРµРј Р·Р°С…РІР°С‚ РѕР±СЉРµРєС‚Р° С„СЂРµР№РјР±СѓС„РµСЂР° Рё СЂРµРЅРґРµСЂРёРј СЌРєСЂР°РЅРЅС‹Р№ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј BRDF-С€РµР№РґРµСЂР°.
     glBindFramebuffer(GL_FRAMEBUFFER, captureFBO);
     glBindRenderbuffer(GL_RENDERBUFFER, captureRBO);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
@@ -360,7 +360,7 @@ int main()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
-    // перед рендерингом инициализируем статические шейдерные uniform-переменные
+    // РїРµСЂРµРґ СЂРµРЅРґРµСЂРёРЅРіРѕРј РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј СЃС‚Р°С‚РёС‡РµСЃРєРёРµ С€РµР№РґРµСЂРЅС‹Рµ uniform-РїРµСЂРµРјРµРЅРЅС‹Рµ
     // --------------------------------------------------
     glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
     pbrShader.use();
@@ -368,31 +368,31 @@ int main()
     backgroundShader.use();
     backgroundShader.setMat4("projection", projection);
 
-    // далее, перед рендерингом, конфигурируем видовой экран в соответствии с исходными размерами экрана фреймбуфера
+    // РґР°Р»РµРµ, РїРµСЂРµРґ СЂРµРЅРґРµСЂРёРЅРіРѕРј, РєРѕРЅС„РёРіСѓСЂРёСЂСѓРµРј РІРёРґРѕРІРѕР№ СЌРєСЂР°РЅ РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РёСЃС…РѕРґРЅС‹РјРё СЂР°Р·РјРµСЂР°РјРё СЌРєСЂР°РЅР° С„СЂРµР№РјР±СѓС„РµСЂР°
     int scrWidth, scrHeight;
     glfwGetFramebufferSize(window, &scrWidth, &scrHeight);
     glViewport(0, 0, scrWidth, scrHeight);
 
-    // цикл рендеринга
+    // С†РёРєР» СЂРµРЅРґРµСЂРёРЅРіР°
     // -----------
     while (!glfwWindowShouldClose(window))
     {
-        // логическая часть работы со временем для каждого кадра
+        // Р»РѕРіРёС‡РµСЃРєР°СЏ С‡Р°СЃС‚СЊ СЂР°Р±РѕС‚С‹ СЃРѕ РІСЂРµРјРµРЅРµРј РґР»СЏ РєР°Р¶РґРѕРіРѕ РєР°РґСЂР°
         // --------------------
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // обработка ввода
+        // РѕР±СЂР°Р±РѕС‚РєР° РІРІРѕРґР°
         // -----
         processInput(window);
 
-        // рендер
+        // СЂРµРЅРґРµСЂ
         // ------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // рендеринг сцены, передавая свертку карты облученности в завершающий шейдер
+        // СЂРµРЅРґРµСЂРёРЅРі СЃС†РµРЅС‹, РїРµСЂРµРґР°РІР°СЏ СЃРІРµСЂС‚РєСѓ РєР°СЂС‚С‹ РѕР±Р»СѓС‡РµРЅРЅРѕСЃС‚Рё РІ Р·Р°РІРµСЂС€Р°СЋС‰РёР№ С€РµР№РґРµСЂ
         // ------------------------------------------------------------------------------------------
         pbrShader.use();
         glm::mat4 model = glm::mat4(1.0f);
@@ -400,7 +400,7 @@ int main()
         pbrShader.setMat4("view", view);
         pbrShader.setVec3("camPos", camera.Position);
 
-        // связываем предварительно вычисленные IBL-данные
+        // СЃРІСЏР·С‹РІР°РµРј РїСЂРµРґРІР°СЂРёС‚РµР»СЊРЅРѕ РІС‹С‡РёСЃР»РµРЅРЅС‹Рµ IBL-РґР°РЅРЅС‹Рµ
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap);
         glActiveTexture(GL_TEXTURE1);
@@ -408,7 +408,7 @@ int main()
         glActiveTexture(GL_TEXTURE2);
         glBindTexture(GL_TEXTURE_2D, brdfLUTTexture);
 
-        // ржавое железо
+        // СЂР¶Р°РІРѕРµ Р¶РµР»РµР·Рѕ
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, ironAlbedoMap);
         glActiveTexture(GL_TEXTURE4);
@@ -425,7 +425,7 @@ int main()
         pbrShader.setMat4("model", model);
         renderSphere();
 
-        // золото
+        // Р·РѕР»РѕС‚Рѕ
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, goldAlbedoMap);
         glActiveTexture(GL_TEXTURE4);
@@ -442,7 +442,7 @@ int main()
         pbrShader.setMat4("model", model);
         renderSphere();
 
-        // трава
+        // С‚СЂР°РІР°
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, grassAlbedoMap);
         glActiveTexture(GL_TEXTURE4);
@@ -459,7 +459,7 @@ int main()
         pbrShader.setMat4("model", model);
         renderSphere();
 
-        // пластик
+        // РїР»Р°СЃС‚РёРє
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, plasticAlbedoMap);
         glActiveTexture(GL_TEXTURE4);
@@ -476,7 +476,7 @@ int main()
         pbrShader.setMat4("model", model);
         renderSphere();
 
-        // кирпичная стена
+        // РєРёСЂРїРёС‡РЅР°СЏ СЃС‚РµРЅР°
         glActiveTexture(GL_TEXTURE3);
         glBindTexture(GL_TEXTURE_2D, wallAlbedoMap);
         glActiveTexture(GL_TEXTURE4);
@@ -493,8 +493,8 @@ int main()
         pbrShader.setMat4("model", model);
         renderSphere();
 
-        // рендерим источник света (просто ререндерим сферу на месте источника света)
-        // это выглядит немного не так, поскольку мы используем один и тот же шейдер 
+        // СЂРµРЅРґРµСЂРёРј РёСЃС‚РѕС‡РЅРёРє СЃРІРµС‚Р° (РїСЂРѕСЃС‚Рѕ СЂРµСЂРµРЅРґРµСЂРёРј СЃС„РµСЂСѓ РЅР° РјРµСЃС‚Рµ РёСЃС‚РѕС‡РЅРёРєР° СЃРІРµС‚Р°)
+        // СЌС‚Рѕ РІС‹РіР»СЏРґРёС‚ РЅРµРјРЅРѕРіРѕ РЅРµ С‚Р°Рє, РїРѕСЃРєРѕР»СЊРєСѓ РјС‹ РёСЃРїРѕР»СЊР·СѓРµРј РѕРґРёРЅ Рё С‚РѕС‚ Р¶Рµ С€РµР№РґРµСЂ 
         for (unsigned int i = 0; i < sizeof(lightPositions) / sizeof(lightPositions[0]); ++i)
         {
             glm::vec3 newPos = lightPositions[i] + glm::vec3(sin(glfwGetTime() * 5.0) * 5.0, 0.0, 0.0);
@@ -509,34 +509,34 @@ int main()
             renderSphere();
         }
 
-        // рендер скайбокса
+        // СЂРµРЅРґРµСЂ СЃРєР°Р№Р±РѕРєСЃР°
         backgroundShader.use();
 
         backgroundShader.setMat4("view", view);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_CUBE_MAP, envCubemap);
-        //glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap); // отображаем карту облученности
-        //glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMap); // отображаем карту пре-фильтра
+        //glBindTexture(GL_TEXTURE_CUBE_MAP, irradianceMap); // РѕС‚РѕР±СЂР°Р¶Р°РµРј РєР°СЂС‚Сѓ РѕР±Р»СѓС‡РµРЅРЅРѕСЃС‚Рё
+        //glBindTexture(GL_TEXTURE_CUBE_MAP, prefilterMap); // РѕС‚РѕР±СЂР°Р¶Р°РµРј РєР°СЂС‚Сѓ РїСЂРµ-С„РёР»СЊС‚СЂР°
         renderCube();
 
-        // рендер BRDF-карты
+        // СЂРµРЅРґРµСЂ BRDF-РєР°СЂС‚С‹
         //brdfShader.Use();
         //renderQuad();
 
 
-        // glfw: обмен содержимым переднего и заднего буферов. Опрос событий Ввода\Ввывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
+        // glfw: РѕР±РјРµРЅ СЃРѕРґРµСЂР¶РёРјС‹Рј РїРµСЂРµРґРЅРµРіРѕ Рё Р·Р°РґРЅРµРіРѕ Р±СѓС„РµСЂРѕРІ. РћРїСЂРѕСЃ СЃРѕР±С‹С‚РёР№ Р’РІРѕРґР°\Р’РІС‹РІРѕРґР° (Р±С‹Р»Р° Р»Рё РЅР°Р¶Р°С‚Р°/РѕС‚РїСѓС‰РµРЅР° РєРЅРѕРїРєР°, РїРµСЂРµРјРµС‰РµРЅ РєСѓСЂСЃРѕСЂ РјС‹С€Рё Рё С‚.Рї.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    // glfw: завершение, освобождение всех выделенных GLFW-ресурсов.
+    // glfw: Р·Р°РІРµСЂС€РµРЅРёРµ, РѕСЃРІРѕР±РѕР¶РґРµРЅРёРµ РІСЃРµС… РІС‹РґРµР»РµРЅРЅС‹С… GLFW-СЂРµСЃСѓСЂСЃРѕРІ.
     // ------------------------------------------------------------------
     glfwTerminate();
     return 0;
 }
 
-// Обработка всех событий ввода: запрос GLFW о нажатии/отпускании кнопки мыши в данном кадре и соответствующая обработка данных событий
+// РћР±СЂР°Р±РѕС‚РєР° РІСЃРµС… СЃРѕР±С‹С‚РёР№ РІРІРѕРґР°: Р·Р°РїСЂРѕСЃ GLFW Рѕ РЅР°Р¶Р°С‚РёРё/РѕС‚РїСѓСЃРєР°РЅРёРё РєРЅРѕРїРєРё РјС‹С€Рё РІ РґР°РЅРЅРѕРј РєР°РґСЂРµ Рё СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰Р°СЏ РѕР±СЂР°Р±РѕС‚РєР° РґР°РЅРЅС‹С… СЃРѕР±С‹С‚РёР№
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window)
 {
@@ -553,17 +553,17 @@ void processInput(GLFWwindow* window)
         camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
-// glfw: всякий раз, когда изменяются размеры окна (пользователем или опер. системой), вызывается данная функция
+// glfw: РІСЃСЏРєРёР№ СЂР°Р·, РєРѕРіРґР° РёР·РјРµРЅСЏСЋС‚СЃСЏ СЂР°Р·РјРµСЂС‹ РѕРєРЅР° (РїРѕР»СЊР·РѕРІР°С‚РµР»РµРј РёР»Рё РѕРїРµСЂ. СЃРёСЃС‚РµРјРѕР№), РІС‹Р·С‹РІР°РµС‚СЃСЏ РґР°РЅРЅР°СЏ С„СѓРЅРєС†РёСЏ
 // ---------------------------------------------------------------------------------------------
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // убеждаемся, что вьюпорт соответствует новым размерам окна; обратите внимание,
-    // что ширина и высота будут значительно больше, чем указано на retina -дисплеях.
+    // СѓР±РµР¶РґР°РµРјСЃСЏ, С‡С‚Рѕ РІСЊСЋРїРѕСЂС‚ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ РЅРѕРІС‹Рј СЂР°Р·РјРµСЂР°Рј РѕРєРЅР°; РѕР±СЂР°С‚РёС‚Рµ РІРЅРёРјР°РЅРёРµ,
+    // С‡С‚Рѕ С€РёСЂРёРЅР° Рё РІС‹СЃРѕС‚Р° Р±СѓРґСѓС‚ Р·РЅР°С‡РёС‚РµР»СЊРЅРѕ Р±РѕР»СЊС€Рµ, С‡РµРј СѓРєР°Р·Р°РЅРѕ РЅР° retina -РґРёСЃРїР»РµСЏС….
     glViewport(0, 0, width, height);
 }
 
 
-// glfw: всякий раз, когда перемещается мышь, вызывается данная callback-функция
+// glfw: РІСЃСЏРєРёР№ СЂР°Р·, РєРѕРіРґР° РїРµСЂРµРјРµС‰Р°РµС‚СЃСЏ РјС‹С€СЊ, РІС‹Р·С‹РІР°РµС‚СЃСЏ РґР°РЅРЅР°СЏ callback-С„СѓРЅРєС†РёСЏ
 // -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
@@ -575,7 +575,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     }
 
     float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // перевернуто, так как Y-координаты идут снизу вверх
+    float yoffset = lastY - ypos; // РїРµСЂРµРІРµСЂРЅСѓС‚Рѕ, С‚Р°Рє РєР°Рє Y-РєРѕРѕСЂРґРёРЅР°С‚С‹ РёРґСѓС‚ СЃРЅРёР·Сѓ РІРІРµСЂС…
 
     lastX = xpos;
     lastY = ypos;
@@ -583,14 +583,14 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
-// glfw: всякий раз, когда прокручивается колесико мыши, вызывается данная callback-функция
+// glfw: РІСЃСЏРєРёР№ СЂР°Р·, РєРѕРіРґР° РїСЂРѕРєСЂСѓС‡РёРІР°РµС‚СЃСЏ РєРѕР»РµСЃРёРєРѕ РјС‹С€Рё, РІС‹Р·С‹РІР°РµС‚СЃСЏ РґР°РЅРЅР°СЏ callback-С„СѓРЅРєС†РёСЏ
 // ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     camera.ProcessMouseScroll(yoffset);
 }
 
-// рендерит (и строит при первом же вызове) сферу
+// СЂРµРЅРґРµСЂРёС‚ (Рё СЃС‚СЂРѕРёС‚ РїСЂРё РїРµСЂРІРѕРј Р¶Рµ РІС‹Р·РѕРІРµ) СЃС„РµСЂСѓ
 // -------------------------------------------------
 unsigned int sphereVAO = 0;
 unsigned int indexCount;
@@ -631,7 +631,7 @@ void renderSphere()
         bool oddRow = false;
         for (unsigned int y = 0; y < Y_SEGMENTS; ++y)
         {
-            if (!oddRow) // четные строки: y == 0, y == 2; и так далее
+            if (!oddRow) // С‡РµС‚РЅС‹Рµ СЃС‚СЂРѕРєРё: y == 0, y == 2; Рё С‚Р°Рє РґР°Р»РµРµ
             {
                 for (unsigned int x = 0; x <= X_SEGMENTS; ++x)
                 {
@@ -687,65 +687,65 @@ void renderSphere()
     glDrawElements(GL_TRIANGLE_STRIP, indexCount, GL_UNSIGNED_INT, 0);
 }
 
-// renderCube() рендерит 1x1 3D-ящик в NDC.
+// renderCube() СЂРµРЅРґРµСЂРёС‚ 1x1 3D-СЏС‰РёРє РІ NDC.
 // -------------------------------------------------
 unsigned int cubeVAO = 0;
 unsigned int cubeVBO = 0;
 void renderCube()
 {
-    // инициализация (если необходимо)
+    // РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ (РµСЃР»Рё РЅРµРѕР±С…РѕРґРёРјРѕ)
     if (cubeVAO == 0)
     {
         float vertices[] = {
-            // задняя грань
-            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // нижняя-левая
-             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // верхняя-правая
-             1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // нижняя-правая         
-             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // верхняя-правая
-            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // нижняя-левая
-            -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // верхняя-левая
-            // передняя грань
-            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // нижняя-левая
-             1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // нижняя-правая
-             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // верхняя-правая
-             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // верхняя-правая
-            -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // верхняя-левая
-            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // нижняя-левая
-            // грань слева
-            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // верхняя-правая
-            -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // верхняя-левая
-            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // нижняя-левая
-            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // нижняя-левая
-            -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // нижняя-правая
-            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // верхняя-правая
-            // грань справа
-             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // верхняя-левая
-             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // нижняя-правая
-             1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // верхняя-правая         
-             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // нижняя-правая
-             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // верхняя-левая
-             1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // нижняя-левая     
-            // нижняя грань
-            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // верхняя-правая
-             1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // верхняя-левая
-             1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // нижняя-левая
-             1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // нижняя-левая
-            -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // нижняя-правая
-            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // верхняя-правая
-            // верхняя грань
-            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // верхняя-левая
-             1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // нижняя-правая
-             1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // верхняя-правая     
-             1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // нижняя-правая
-            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // верхняя-левая
-            -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // нижняя-левая        
+            // Р·Р°РґРЅСЏСЏ РіСЂР°РЅСЊ
+            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // РЅРёР¶РЅСЏСЏ-Р»РµРІР°СЏ
+             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // РІРµСЂС…РЅСЏСЏ-РїСЂР°РІР°СЏ
+             1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // РЅРёР¶РЅСЏСЏ-РїСЂР°РІР°СЏ         
+             1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // РІРµСЂС…РЅСЏСЏ-РїСЂР°РІР°СЏ
+            -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // РЅРёР¶РЅСЏСЏ-Р»РµРІР°СЏ
+            -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // РІРµСЂС…РЅСЏСЏ-Р»РµРІР°СЏ
+            // РїРµСЂРµРґРЅСЏСЏ РіСЂР°РЅСЊ
+            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // РЅРёР¶РЅСЏСЏ-Р»РµРІР°СЏ
+             1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // РЅРёР¶РЅСЏСЏ-РїСЂР°РІР°СЏ
+             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // РІРµСЂС…РЅСЏСЏ-РїСЂР°РІР°СЏ
+             1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // РІРµСЂС…РЅСЏСЏ-РїСЂР°РІР°СЏ
+            -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // РІРµСЂС…РЅСЏСЏ-Р»РµРІР°СЏ
+            -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // РЅРёР¶РЅСЏСЏ-Р»РµРІР°СЏ
+            // РіСЂР°РЅСЊ СЃР»РµРІР°
+            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // РІРµСЂС…РЅСЏСЏ-РїСЂР°РІР°СЏ
+            -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // РІРµСЂС…РЅСЏСЏ-Р»РµРІР°СЏ
+            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // РЅРёР¶РЅСЏСЏ-Р»РµРІР°СЏ
+            -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // РЅРёР¶РЅСЏСЏ-Р»РµРІР°СЏ
+            -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // РЅРёР¶РЅСЏСЏ-РїСЂР°РІР°СЏ
+            -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // РІРµСЂС…РЅСЏСЏ-РїСЂР°РІР°СЏ
+            // РіСЂР°РЅСЊ СЃРїСЂР°РІР°
+             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // РІРµСЂС…РЅСЏСЏ-Р»РµРІР°СЏ
+             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // РЅРёР¶РЅСЏСЏ-РїСЂР°РІР°СЏ
+             1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // РІРµСЂС…РЅСЏСЏ-РїСЂР°РІР°СЏ         
+             1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // РЅРёР¶РЅСЏСЏ-РїСЂР°РІР°СЏ
+             1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // РІРµСЂС…РЅСЏСЏ-Р»РµРІР°СЏ
+             1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // РЅРёР¶РЅСЏСЏ-Р»РµРІР°СЏ     
+            // РЅРёР¶РЅСЏСЏ РіСЂР°РЅСЊ
+            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // РІРµСЂС…РЅСЏСЏ-РїСЂР°РІР°СЏ
+             1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // РІРµСЂС…РЅСЏСЏ-Р»РµРІР°СЏ
+             1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // РЅРёР¶РЅСЏСЏ-Р»РµРІР°СЏ
+             1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // РЅРёР¶РЅСЏСЏ-Р»РµРІР°СЏ
+            -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // РЅРёР¶РЅСЏСЏ-РїСЂР°РІР°СЏ
+            -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // РІРµСЂС…РЅСЏСЏ-РїСЂР°РІР°СЏ
+            // РІРµСЂС…РЅСЏСЏ РіСЂР°РЅСЊ
+            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // РІРµСЂС…РЅСЏСЏ-Р»РµРІР°СЏ
+             1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // РЅРёР¶РЅСЏСЏ-РїСЂР°РІР°СЏ
+             1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // РІРµСЂС…РЅСЏСЏ-РїСЂР°РІР°СЏ     
+             1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // РЅРёР¶РЅСЏСЏ-РїСЂР°РІР°СЏ
+            -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // РІРµСЂС…РЅСЏСЏ-Р»РµРІР°СЏ
+            -1.0f,  1.0f,  1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 0.0f  // РЅРёР¶РЅСЏСЏ-Р»РµРІР°СЏ        
         };
         glGenVertexArrays(1, &cubeVAO);
         glGenBuffers(1, &cubeVBO);
-        // заполняем буфер
+        // Р·Р°РїРѕР»РЅСЏРµРј Р±СѓС„РµСЂ
         glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        // связываем вершинные атрибуты
+        // СЃРІСЏР·С‹РІР°РµРј РІРµСЂС€РёРЅРЅС‹Рµ Р°С‚СЂРёР±СѓС‚С‹
         glBindVertexArray(cubeVAO);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
@@ -756,13 +756,13 @@ void renderCube()
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
-    // рендер куба
+    // СЂРµРЅРґРµСЂ РєСѓР±Р°
     glBindVertexArray(cubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
 }
 
-// renderQuad() рендерит 1x1 XY прямоугольник NDC
+// renderQuad() СЂРµРЅРґРµСЂРёС‚ 1x1 XY РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє NDC
 // -----------------------------------------
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
@@ -771,13 +771,13 @@ void renderQuad()
     if (quadVAO == 0)
     {
         float quadVertices[] = {
-            // координаты        // текстурные координаты
+            // РєРѕРѕСЂРґРёРЅР°С‚С‹        // С‚РµРєСЃС‚СѓСЂРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹
             -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
             -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
              1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
              1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
         };
-        // устанавливаем VAO плоскости
+        // СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј VAO РїР»РѕСЃРєРѕСЃС‚Рё
         glGenVertexArrays(1, &quadVAO);
         glGenBuffers(1, &quadVBO);
         glBindVertexArray(quadVAO);
@@ -793,7 +793,7 @@ void renderQuad()
     glBindVertexArray(0);
 }
 
-// вспомогательная функция загрузки 2D-текстур из файла
+// РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ Р·Р°РіСЂСѓР·РєРё 2D-С‚РµРєСЃС‚СѓСЂ РёР· С„Р°Р№Р»Р°
 // ---------------------------------------------------
 unsigned int loadTexture(char const* path)
 {
