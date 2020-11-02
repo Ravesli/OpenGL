@@ -65,7 +65,7 @@ void main()
 {		
     vec3 N = normalize(WorldPos);
     
-    // make the simplyfying assumption that V equals R equals the normal 
+    // делаем упрощающее предположение, что V = R = N
     vec3 R = N;
     vec3 V = R;
 
@@ -75,7 +75,7 @@ void main()
     
     for(uint i = 0u; i < SAMPLE_COUNT; ++i)
     {
-        // генерируем вектор выборки, смещенный в сторону предпочтительного направления сэмплирования (выборка по важности).
+        // генерируем вектор выборки, смещенный в сторону предпочтительного направления (выборка по важности).
         vec2 Xi = Hammersley(i, SAMPLE_COUNT);
         vec3 H = ImportanceSampleGGX(Xi, N, roughness);
         vec3 L  = normalize(2.0 * dot(V, H) * H - V);

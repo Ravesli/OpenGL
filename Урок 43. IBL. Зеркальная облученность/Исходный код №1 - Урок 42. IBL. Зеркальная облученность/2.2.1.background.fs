@@ -8,7 +8,7 @@ void main()
 {		
     vec3 envColor = textureLod(environmentMap, WorldPos, 0.0).rgb;
     
-    // HDR tonemap and gamma correct
+    // Тональная компрессия и гамма-коррекция
     envColor = envColor / (envColor + vec3(1.0));
     envColor = pow(envColor, vec3(1.0/2.2)); 
     
