@@ -1,3 +1,5 @@
+
+
 #version 330 core
 out vec2 FragColor;
 in vec2 TexCoords;
@@ -5,7 +7,7 @@ in vec2 TexCoords;
 const float PI = 3.14159265359;
 // ----------------------------------------------------------------------------
 // http://holger.dammertz.org/stuff/notes_HammersleyOnHemisphere.html
-// эффективный расчет VanDerCorpus.
+// efficient VanDerCorpus calculation.
 float RadicalInverse_VdC(uint bits) 
 {
      bits = (bits << 16u) | (bits >> 16u);
@@ -46,7 +48,7 @@ vec3 ImportanceSampleGGX(vec2 Xi, vec3 N, float roughness)
 // ----------------------------------------------------------------------------
 float GeometrySchlickGGX(float NdotV, float roughness)
 {
-    // note that we use a different k for IBL
+    // обратите внимание, что мы используем другое k для IBL
     float a = roughness;
     float k = (a * a) / 2.0;
 
@@ -81,8 +83,8 @@ vec2 IntegrateBRDF(float NdotV, float roughness)
     const uint SAMPLE_COUNT = 1024u;
     for(uint i = 0u; i < SAMPLE_COUNT; ++i)
     {
-        // generates a sample vector that's biased towards the
-        // preferred alignment direction (importance sampling).
+        // генерирует вектор выборки, смещенный в сторону
+	// предпочтительного направления выравнивания (выборка по важности).
         vec2 Xi = Hammersley(i, SAMPLE_COUNT);
         vec3 H = ImportanceSampleGGX(Xi, N, roughness);
         vec3 L = normalize(2.0 * dot(V, H) * H - V);
@@ -111,3 +113,4 @@ void main()
     vec2 integratedBRDF = IntegrateBRDF(TexCoords.x, TexCoords.y);
     FragColor = integratedBRDF;
 }
+

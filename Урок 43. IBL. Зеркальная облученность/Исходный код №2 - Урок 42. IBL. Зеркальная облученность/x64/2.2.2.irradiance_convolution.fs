@@ -36,3 +36,4 @@ void main()
     
     FragColor = vec4(irradiance, 1.0);
 }
+

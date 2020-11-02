@@ -5,10 +5,11 @@ in vec3 WorldPos;
 in vec3 Normal;
 
 // параметры материала
-uniform vec3 albedo;
-uniform float metallic;
-uniform float roughness;
-uniform float ao;
+uniform sampler2D albedoMap;
+uniform sampler2D normalMap;
+uniform sampler2D metallicMap;
+uniform sampler2D roughnessMap;
+uniform sampler2D aoMap;
 
 // IBL
 uniform samplerCube irradianceMap;
@@ -22,6 +23,24 @@ uniform vec3 lightColors[4];
 uniform vec3 camPos;
 
 const float PI = 3.14159265359;
+// ----------------------------------------------------------------------------
+// Простой трюк, чтобы получить касательные-нормали в мировом пространстве, чтобы упростить код PBR.
+vec3 getNormalFromMap()
+{
+    vec3 tangentNormal = texture(normalMap, TexCoords).xyz * 2.0 - 1.0;
+
+    vec3 Q1  = dFdx(WorldPos);
+    vec3 Q2  = dFdy(WorldPos);
+    vec2 st1 = dFdx(TexCoords);
+    vec2 st2 = dFdy(TexCoords);
+
+    vec3 N   = normalize(Normal);
+    vec3 T  = normalize(Q1*st2.t - Q2*st1.t);
+    vec3 B  = -normalize(cross(N, T));
+    mat3 TBN = mat3(T, B, N);
+
+    return normalize(TBN * tangentNormal);
+}
 // ----------------------------------------------------------------------------
 float DistributionGGX(vec3 N, vec3 H, float roughness)
 {
@@ -70,7 +89,14 @@ vec3 fresnelSchlickRoughness(float cosTheta, vec3 F0, float roughness)
 // ----------------------------------------------------------------------------
 void main()
 {		
-    vec3 N = Normal;
+    // material properties
+    vec3 albedo = pow(texture(albedoMap, TexCoords).rgb, vec3(2.2));
+    float metallic = texture(metallicMap, TexCoords).r;
+    float roughness = texture(roughnessMap, TexCoords).r;
+    float ao = texture(aoMap, TexCoords).r;
+       
+    // входящие данные освещения
+    vec3 N = getNormalFromMap();
     vec3 V = normalize(camPos - WorldPos);
     vec3 R = reflect(-V, N); 
 
@@ -79,7 +105,7 @@ void main()
     vec3 F0 = vec3(0.04); 
     F0 = mix(F0, albedo, metallic);
 
-    // уравнение отражения
+    // reflectance equation
     vec3 Lo = vec3(0.0);
     for(int i = 0; i < 4; ++i) 
     {
@@ -90,7 +116,7 @@ void main()
         float attenuation = 1.0 / (distance * distance);
         vec3 radiance = lightColors[i] * attenuation;
 
-        // BRDF Кука-Торренса 
+        // BRDF Кука-Торренса
         float NDF = DistributionGGX(N, H, roughness);   
         float G   = GeometrySmith(N, V, L, roughness);    
         vec3 F    = fresnelSchlick(max(dot(H, V), 0.0), F0);        
@@ -105,9 +131,9 @@ void main()
         // быть больше 1.0 (кроме тех случаев, когда сама поверхность имеет возможность излучать свет); для выполнения
         // данного соотношения диффузная составляющая (kD) должна равняться значению 1.0 - kS.
         vec3 kD = vec3(1.0) - kS;
-        // умножаем kD на значение "1 - металличность", чтобы только неметаллы 
-        // имели диффузное освещение, или линейную композицию в случае полуметаллического материала (чисто металлические материалы
-        // не имеют диффузного освещения).
+        // multiply kD by the inverse metalness such that only non-metals 
+        // have diffuse lighting, or a linear blend if partly metal (pure metals
+        // have no diffuse light).
         kD *= 1.0 - metallic;	                
             
         // масштабируем освещенность при помощи NdotL
@@ -144,3 +170,4 @@ void main()
 
     FragColor = vec4(color , 1.0);
 }
+
