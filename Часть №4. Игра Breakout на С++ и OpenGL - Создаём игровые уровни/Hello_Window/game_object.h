@@ -16,22 +16,22 @@
 #include "sprite_renderer.h"
 
 
-// Контейнерный объект, хранящий все состояния, относящиеся к отдельно взятой игровой сущности.
+// РљРѕРЅС‚РµР№РЅРµСЂРЅС‹Р№ РѕР±СЉРµРєС‚, С…СЂР°РЅСЏС‰РёР№ РІСЃРµ СЃРѕСЃС‚РѕСЏРЅРёСЏ, РѕС‚РЅРѕСЃСЏС‰РёРµСЃСЏ Рє РѕС‚РґРµР»СЊРЅРѕ РІР·СЏС‚РѕР№ РёРіСЂРѕРІРѕР№ СЃСѓС‰РЅРѕСЃС‚Рё.
 class GameObject
 {
 public:
-    // состояние объекта
+    // СЃРѕСЃС‚РѕСЏРЅРёРµ РѕР±СЉРµРєС‚Р°
     glm::vec2   Position, Size, Velocity;
     glm::vec3   Color;
     float       Rotation;
     bool        IsSolid;
     bool        Destroyed;
-    // состояние рендера
+    // СЃРѕСЃС‚РѕСЏРЅРёРµ СЂРµРЅРґРµСЂР°
     Texture2D   Sprite;
-    // конструктор(ы)
+    // РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ(С‹)
     GameObject();
     GameObject(glm::vec2 pos, glm::vec2 size, Texture2D sprite, glm::vec3 color = glm::vec3(1.0f), glm::vec2 velocity = glm::vec2(0.0f, 0.0f));
-    // отрисовка спрайта
+    // РѕС‚СЂРёСЃРѕРІРєР° СЃРїСЂР°Р№С‚Р°
     virtual void Draw(SpriteRenderer& renderer);
 };
 
