@@ -16,10 +16,6 @@
 SpriteRenderer* Renderer;
 GameObject* Player;
 BallObject* Ball;
-// Начальная скорость мяча
-const glm::vec2 INITIAL_BALL_VELOCITY(100.0f, -350.0f);
-// Радиус мяча
-const float BALL_RADIUS = 12.5f;
 
 Game::Game(unsigned int width, unsigned int height)
     : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
