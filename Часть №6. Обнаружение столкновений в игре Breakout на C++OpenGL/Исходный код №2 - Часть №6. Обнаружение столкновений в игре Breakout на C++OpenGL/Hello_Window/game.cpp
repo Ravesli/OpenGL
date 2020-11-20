@@ -122,7 +122,25 @@ void Game::Render()
     }
 }
 
-bool Game::CheckCollision(BallObject& one, GameObject& two) // Столкновения вида AABB - Окружность
+//Определение столкновения
+bool CheckCollision(BallObject& one, GameObject& two); // Столкновения вида AABB - Окружность
+
+void Game::DoCollisions()
+{
+    for (GameObject& box : this->Levels[this->Level].Bricks)
+    {
+        if (!box.Destroyed)
+        {
+            if (CheckCollision(*Ball, box))
+            {
+                if (!box.IsSolid)
+                    box.Destroyed = true;
+            }
+        }
+    }
+}
+
+bool CheckCollision(BallObject& one, GameObject& two) // Столкновения вида AABB - Окружность
 {
     // сначала вычисляем точку центра окружности 
     glm::vec2 center(one.Position + one.Radius);
@@ -140,19 +158,4 @@ bool Game::CheckCollision(BallObject& one, GameObject& two) // Столкнов�
     // получаем вектор между центром окружности и ближайшей к ней точкой AABB, проверяем чтобы длина этого вектора была меньше радиуса окружности 
     difference = closest - center;
     return glm::length(difference) < one.Radius;
-}
-
-void Game::DoCollisions()
-{
-    for (GameObject& box : this->Levels[this->Level].Bricks)
-    {
-        if (!box.Destroyed)
-        {
-            if (CheckCollision(*Ball, box))
-            {
-                if (!box.IsSolid)
-                    box.Destroyed = true;
-            }
-        }
-    }
 }
