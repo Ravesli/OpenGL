@@ -121,19 +121,8 @@ void Game::Render()
         Ball->Draw(*Renderer);
     }
 }
-
-bool Game::CheckCollision(BallObject& one, GameObject& two) //AABB - AABB столкновение
-{
-
-    // перекрытие по оси x?
-    bool collisionX = one.Position.x + one.Size.x >= two.Position.x &&
-        two.Position.x + two.Size.x >= one.Position.x;
-    // перекрытие по оси y?
-    bool collisionY = one.Position.y + one.Size.y >= two.Position.y &&
-        two.Position.y + two.Size.y >= one.Position.y;
-    // если перекрытия происходят относительно обеих осей, то мы имеем столкновение
-    return collisionX && collisionY;
-}
+//Определение столкновения
+bool CheckCollision(GameObject& one, GameObject& two); //AABB - AABB столкновение
 
 void Game::DoCollisions()
 {
@@ -148,4 +137,16 @@ void Game::DoCollisions()
             }
         }
     }
+}
+
+bool CheckCollision(GameObject& one, GameObject& two) // AABB - AABB столкновение
+{
+    // перекрытие по оси x?
+    bool collisionX = one.Position.x + one.Size.x >= two.Position.x &&
+        two.Position.x + two.Size.x >= one.Position.x;
+    // перекрытие по оси y?
+    bool collisionY = one.Position.y + one.Size.y >= two.Position.y &&
+        two.Position.y + two.Size.y >= one.Position.y;
+    // если перекрытия происходят относительно обеих осей, то мы имеем столкновение
+    return collisionX && collisionY;
 }

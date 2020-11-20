@@ -50,7 +50,6 @@ public:
     void ProcessInput(float dt);
     void Update(float dt);
     void Render();
-    bool CheckCollision(BallObject& one, GameObject& two); 
     void DoCollisions();
 
 };
