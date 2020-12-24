@@ -19,7 +19,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 #ifdef __APPLE__
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // расскоментируйте эту строчку, если используете macOS
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // раскомментируйте эту строку, если используете macOS
 #endif
 
     // glfw создание окна
@@ -40,17 +40,17 @@ int main()
         return -1;
     }    
 
-    // цикл рендеринга
+    // Цикл рендеринга
     while (!glfwWindowShouldClose(window))
     {
         // Обработка ввода
         processInput(window);
 		
-	// Выполнение рендеринга
+		// Выполнение рендеринга
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        // glfw: обмен содержимым front- и back- буферов. Отслеживание событий вода/вывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
+        // glfw: обмен содержимым front- и back- буферов. Отслеживание событий ввода/вывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -70,7 +70,7 @@ void processInput(GLFWwindow *window)
 // glfw: всякий раз, когда изменяются размеры окна (пользователем или оперионной системой), вызывается данная callback-функция
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // убеждаемся, что окно просмотра соответствует новым размерам окна 
-	// обратите внимание, что ширина и высота будут значительно больше, чем указано на Retina-дисплеях
+    // Убеждаемся, что окно просмотра соответствует новым размерам окна.
+	// Обратите внимание, ширина и высота будут значительно больше, чем указано, на Retina-дисплеях
     glViewport(0, 0, width, height);
 }
