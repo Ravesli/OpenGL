@@ -46,7 +46,7 @@ int main()
         // Обработка ввода
         processInput(window);
 		
-		// Выполнение рендеринга
+	// Выполнение рендеринга
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -71,6 +71,6 @@ void processInput(GLFWwindow *window)
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     // Убеждаемся, что окно просмотра соответствует новым размерам окна.
-	// Обратите внимание, ширина и высота будут значительно больше, чем указано, на Retina-дисплеях
+    // Обратите внимание, ширина и высота будут значительно больше, чем указано, на Retina-дисплеях
     glViewport(0, 0, width, height);
 }
