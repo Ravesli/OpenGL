@@ -1,5 +1,3 @@
-
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include "stb_image.h"
@@ -15,34 +13,32 @@
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 
-// константы
+// Константы
 const unsigned int SCR_WIDTH = 600;
 const unsigned int SCR_HEIGHT = 400;
 
-// камера
+// Камера
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-// тайминги
+// Тайминги
 float deltaTime = 0.0f;	// время между текущим кадром и последним кадром
 float lastFrame = 0.0f;
 
 int main()
 {
 	// glfw: инициализация и конфигурирование
-	// ------------------------------
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 #ifdef __APPLE__
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // Расскоментировать строчку в случае использования MacOS X
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // раскомментируйте эту строку, если используете macOS
 #endif
 
-	// glfw создание окна
-	// --------------------
+	// glfw: создание окна
 	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL for Ravesli.com", NULL, NULL);
 	if (window == NULL)
 	{
@@ -54,25 +50,21 @@ int main()
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 	// glad: загрузка всех указателей на OpenGL-функции
-	// ---------------------------------------
 	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
 	{
 		std::cout << "Failed to initialize GLAD" << std::endl;
 		return -1;
 	}
 
-	// конфигурирование глобального состояния OpenGL
-	// -----------------------------
+	// Конфигурирование глобального состояния OpenGL
 	glEnable(GL_DEPTH_TEST);
 
-	// компилирование нашей шейдерной программы
-	// ------------------------------------
+	// Компилирование нашей шейдерной программы
 	Shader ourShader("../7.2.camera.vs", "../7.2.camera.fs");
 
-	// задание вершин (и буфера(ов)) и настройка вершинных атрибутов
-	// ------------------------------------------------------------------
+	// Указание вершин (и буфера(ов)) и настройка вершинных атрибутов
 	float vertices[] = {
-		// координаты          // текстурные координаты
+		  // координаты        // текстурные координаты
 		 -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
 		  0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
 		  0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -139,30 +131,32 @@ int main()
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	// координатные атрибуты
+	// Координатные атрибуты
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
-	// атрибуты текстурных координат
+	// Атрибуты текстурных координат
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(1);
 
 
-	// загрузка и создание текстуры
-	// -------------------------
+	// Загрузка и создание текстур
 	unsigned int texture1, texture2;
-	// Текстура 1 - Деревянный ящик
-	// ---------
+	
+	// Текстура №1 - Деревянный ящик
 	glGenTextures(1, &texture1);
 	glBindTexture(GL_TEXTURE_2D, texture1);
-	// установка параметров наложения текстуры
+	
+	// Установка параметров наложения текстуры
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// установка параметров фильтрации текстуры
+	
+	// Установка параметров фильтрации текстуры
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// загрузка изображения, создание текстуры и генерирование mipmap-уровней
+	
+	// Загрузка изображения, создание текстуры и генерирование мипмап-уровней
 	int width, height, nrChannels;
-	stbi_set_flip_vertically_on_load(true); // указываем stb_image.h на то, чтобы перевернуть для загруженной текстуры ось Y.
+	stbi_set_flip_vertically_on_load(true); // указываем stb_image.h на то, чтобы перевернуть для загруженной текстуры ось y
 	unsigned char* data = stbi_load("../textures/wooden_container.jpg", &width, &height, &nrChannels, 0);
 	if (data)
 	{
@@ -174,21 +168,24 @@ int main()
 		std::cout << "Failed to load texture" << std::endl;
 	}
 	stbi_image_free(data);
-	// Текстура 2 - Смайлик
-	// ---------
+	
+	// Текстура №2 - Смайлик
 	glGenTextures(1, &texture2);
 	glBindTexture(GL_TEXTURE_2D, texture2);
-	// установка параметров наложения текстуры
+	
+	// Установка параметров наложения текстуры
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-	// установка параметров фильтрации текстуры
+	
+	// Установка параметров фильтрации текстуры
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	// загрузка изображения, создание текстуры и генерирование mipmap-уровней
+	
+	// Загрузка изображения, создание текстуры и генерирование мипмап-уровней
 	data = stbi_load("../textures/awesomeface.png", &width, &height, &nrChannels, 0);
 	if (data)
 	{
-		// файл awesomeface.png имеет альфа-канал(прозрачность), поэтому необходимо использовать пераметр GL_RGBA
+		// Файл awesomeface.png имеет альфа-канал (прозрачность), поэтому необходимо использовать пераметр GL_RGBA
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
@@ -198,54 +195,49 @@ int main()
 	}
 	stbi_image_free(data);
 
-	// указываем opengl какой сэмплер к какому текстурному блоку принадлежит (это нужно сделать только один раз) 
-	// -------------------------------------------------------------------------------------------
+	// Указываем OpenGL, какой сэмплер к какому текстурному блоку принадлежит (это нужно сделать единожды) 
 	ourShader.use();
 	ourShader.setInt("texture1", 0);
 	ourShader.setInt("texture2", 1);
 
-	// // передаем шейдеру матрицу проекции(поскольку проекционная матрица редко меняется, нет необходимости делать это для каждого кадра)
-	// -----------------------------------------------------------------------------------------------------------
+	// Передаем шейдеру матрицу проекции (поскольку проекционная матрица редко меняется, то нет необходимости делать это для каждого кадра)
 	glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
 	ourShader.setMat4("projection", projection);
 
 
-	// цикл рендеринга
-	// -----------
+	// Цикл рендеринга
 	while (!glfwWindowShouldClose(window))
 	{
-		// логическая часть работы со временем для каждого кадра
-		// --------------------
+		// Логическая часть работы со временем для каждого кадра
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		// обработка ввода
-		// -----
+		
+		// Обработка ввода
 		processInput(window);
 
-		// рендеринг
-		// ------
+		// Рендеринг
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //Очищаем буфер цвета и буфер глубины
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // очищаем буфер цвета и буфер глубины
 
-		// привязка текстур к соответствующим текстурным юнитам
+		// Привязка текстур к соответствующим текстурным юнитам
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, texture1);
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_2D, texture2);
 
-		//Активируем шейдер
+		// Активируем шейдер
 		ourShader.use();
 
-		// создаем преобразование камеры/вида
+		// Создаем преобразование камеры/вида
 		glm::mat4 view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 		ourShader.setMat4("view", view);
 
-		// рендерим ящик
+		// Рендерим ящик
 		glBindVertexArray(VAO);
 		for (unsigned int i = 0; i < 10; i++)
 		{
-			// вычисляем матрицу модели для каждого объекта и передаём ее в шейдер до отрисовки
+			// Вычисляем матрицу модели для каждого объекта и передаем её в шейдер до отрисовки
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, cubePositions[i]);
 			float angle = 20.0f * i;
@@ -255,25 +247,21 @@ int main()
 			glDrawArrays(GL_TRIANGLES, 0, 36);
 		}
 
-		// glfw: обмен содержимым переднего и заднего буферов. Опрос событий Ввода\Ввывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
-		// -------------------------------------------------------------------------------
+        // glfw: обмен содержимым front- и back- буферов. Отслеживание событий ввода/вывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
 
-	// опционально: освобождаем все ресурсы, как только они изжили своё назначение:
-	// ------------------------------------------------------------------------
+    // Опционально: освобождаем все ресурсы, как только они выполнили свое предназначение
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 
-	// glfw: завершение, освобождение всех выделенных ранее GLFW-реурсов.
-	// ------------------------------------------------------------------
+	// glfw: завершение, освобождение всех выделенных ранее GLFW-реcурсов	
 	glfwTerminate();
 	return 0;
 }
 
 // Обработка всех событий ввода: запрос GLFW о нажатии/отпускании кнопки мыши в данном кадре и соответствующая обработка данных событий
-// ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -290,12 +278,10 @@ void processInput(GLFWwindow* window)
 		cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
-// glfw: всякий раз, когда изменяются размеры окна (пользователем или опер. системой), вызывается данная функция
-// ---------------------------------------------------------------------------------------------
+// glfw: всякий раз, когда изменяются размеры окна (пользователем или операционной системой), вызывается данная callback-функция
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-	// убеждаемся, что вьюпорт соответствует новым размерам окна; обратите внимание,
-	// что ширина и высота будут значительно больше, чем указано на retina -дисплеях.
+    // Убеждаемся, что окно просмотра соответствует новым размерам окна.
+    // Обратите внимание, ширина и высота будут значительно больше, чем указано, на Retina-дисплеях
 	glViewport(0, 0, width, height);
 }
-
