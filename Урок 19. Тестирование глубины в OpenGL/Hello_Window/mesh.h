@@ -6,7 +6,7 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include "shader.h" //shader.h идентичен файлу shader_s.h
+#include "shader.h" // shader.h идентичен файлу shader_s.h
 
 #include <string>
 #include <vector>
@@ -38,10 +38,10 @@ struct Texture {
 
 class Mesh {
 public:
-    // Данные mesh-а
-    vector<Vertex>       vertices;
+    // Данные меша
+    vector<Vertex> vertices;
     vector<unsigned int> indices;
-    vector<Texture>      textures;
+    vector<Texture> textures;
     unsigned int VAO;
 
     // Конструктор
@@ -55,7 +55,7 @@ public:
         setupMesh();
     }
 
-    // Рендеринг mesh-а
+    // Рендеринг меша
     void Draw(Shader& shader)
     {
         // Связываем соответствующие текстуры
@@ -84,7 +84,7 @@ public:
             glBindTexture(GL_TEXTURE_2D, textures[i].id);
         }
 
-        // Отрисовываем mesh
+        // Отрисовываем меш
         glBindVertexArray(VAO);
         glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
