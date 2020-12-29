@@ -61,56 +61,65 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
 
 void main()
 {    
-    // характеристики
+    // Свойста
     vec3 norm = normalize(Normal);
     vec3 viewDir = normalize(viewPos - FragPos);
     
-    // == =====================================================
-    // Наше освещение настраивается в 3 фазы: направленное освещение, точечный свет  и опционально - фонарик.
-    // Для каждой фазы определяется функция расчета, которая вычисляет соответствующий цвет от каждого источника света.
-    // В функции main() мы берем все вычисленные цвета и 
-    // складываем их вместе для определения окончательного цвета заданного фрагмента
-    // == =====================================================
-    // фаза 1: направленное освещение
+    // =====================================================
+    // Наше освещение настраивается в 3 этапа: направленное освещение, точечный свет  и, опционально, фонарик.
+    // Для каждого этапа определяется функция расчета, которая вычисляет соответствующий цвет от каждого источника света.
+    // В функции main() мы берем все вычисленные цвета и складываем их вместе для определения окончательного цвета заданного фрагмента
+    // =====================================================
+	
+    // Этап №1: Направленное освещение
     vec3 result = CalcDirLight(dirLight, norm, viewDir);
-    // phase 2: точечные источники света
+	
+    // Этап №2: Точечные источники света
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
-        result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);    
-    // фаза 3: прожектор
+        result += CalcPointLight(pointLights[i], norm, FragPos, viewDir);   
+		
+    // Этап №3: Прожектор
     result += CalcSpotLight(spotLight, norm, FragPos, viewDir);    
     
     FragColor = vec4(result, 1.0);
 }
 
-// вычисляем цвет при использовании направленного света.
+// Вычисляем цвет при использовании направленного света
 vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
 {
     vec3 lightDir = normalize(-light.direction);
-    // diffuse shading (диффузное затенение)
+	
+    // Диффузное затенение
     float diff = max(dot(normal, lightDir), 0.0);
-    // specular shading (отраженное затенение)
+	
+    // Отраженное затенение
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    // совмещаем результаты
+	
+    // Совмещаем результаты
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
     vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoords));
     return (ambient + diffuse + specular);
 }
 
-// вычисляем цвет при использовании точечного источника света.
+// Вычисляем цвет при использовании точечного источника света
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
     vec3 lightDir = normalize(light.position - fragPos);
-    // diffuse shading (диффузное затенение)
+	
+    // Диффузное затенение
     float diff = max(dot(normal, lightDir), 0.0);
-    // specular shading (отраженное затенение)
+	
+    // Отраженное затенение
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    // attenuation (затухание)
+	
+    // Затухание
     float distance = length(light.position - fragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
-    // совмещаем результаты
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));   
+	
+    // Совмещаем результаты
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
     vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoords));
@@ -120,23 +129,28 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     return (ambient + diffuse + specular);
 }
 
-// вычисляем цвет при использовании прожектора.
+// Вычисляем цвет при использовании прожектора
 vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 {
     vec3 lightDir = normalize(light.position - fragPos);
-    // diffuse shading (диффузное затенение)
+	
+    // Диффузное затенение
     float diff = max(dot(normal, lightDir), 0.0);
-    // specular shading (отраженное затенение)
+	
+    // Отраженное затенение
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-    // attenuation (затухание)
+	
+    // Затухание
     float distance = length(light.position - fragPos);
-    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
-    // интенсивность прожектора
+    float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance)); 
+	
+    // Интенсивность прожектора
     float theta = dot(lightDir, normalize(-light.direction)); 
     float epsilon = light.cutOff - light.outerCutOff;
     float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
-    // совмещаем результаты
+	
+    // Совмещаем результаты
     vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
     vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse, TexCoords));
     vec3 specular = light.specular * spec * vec3(texture(material.specular, TexCoords));
