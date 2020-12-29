@@ -34,31 +34,31 @@ void main()
 {
     vec3 lightDir = normalize(light.position - FragPos);
     
-    // check if lighting is inside the spotlight cone
+    // Проверяем, находится ли освещение внутри конуса прожектора
     float theta = dot(lightDir, normalize(-light.direction)); 
     
     if(theta > light.cutOff) // помните, что мы работаем с косинусами углов, а не с самими углами, поэтому используем символ сравнения '>'
     {    
-        // ambient
+        // Окружающая составляющая
         vec3 ambient = light.ambient * texture(material.diffuse, TexCoords).rgb;
         
-        // diffuse 
+        // Диффузная составляющая 
         vec3 norm = normalize(Normal);
         float diff = max(dot(norm, lightDir), 0.0);
         vec3 diffuse = light.diffuse * diff * texture(material.diffuse, TexCoords).rgb;  
         
-        // specular
+        // Отраженная составляющая
         vec3 viewDir = normalize(viewPos - FragPos);
         vec3 reflectDir = reflect(-lightDir, norm);  
         float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
         vec3 specular = light.specular * spec * texture(material.specular, TexCoords).rgb;  
         
-        // attenuation
-        float distance    = length(light.position - FragPos);
+        // Затухание
+        float distance = length(light.position - FragPos);
         float attenuation = 1.0 / (light.constant + light.linear * distance + light.quadratic * (distance * distance));    
 
-        // ambient  *= attenuation; // убираем ambient-затухание, так как в противном случае, из-за линейного члена ambient внутри ветви else, на больших расстояниях освещенность внутри прожектора будет меньше, чем снаружи
-        diffuse   *= attenuation;
+        // ambient *= attenuation; // убираем ambient-затухание, так как в противном случае, из-за линейного члена ambient внутри ветви else, на больших расстояниях освещенность внутри прожектора будет меньше, чем снаружи
+        diffuse *= attenuation;
         specular *= attenuation;   
             
         vec3 result = ambient + diffuse + specular;
@@ -66,7 +66,7 @@ void main()
     }
     else 
     {
-        // иначе, используем ambient-свет, чтобы вне прожектора сцена не была польностью темной
+        // Иначе, используем ambient-свет, чтобы вне прожектора сцена не была полностью темной
         FragColor = vec4(light.ambient * texture(material.diffuse, TexCoords).rgb, 1.0);
     }
 } 
