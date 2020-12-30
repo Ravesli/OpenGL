@@ -20,24 +20,23 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 unsigned int loadTexture(const char* path);
 
-// настройки
+// Константы
 const unsigned int SCR_WIDTH = 600;
 const unsigned int SCR_HEIGHT = 400;
 
-// камера
+// Камера
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
 bool firstMouse = true;
 
-// тайминги
+// Тайминги
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 int main()
 {
     // glfw: инициализация и конфигурирование
-    // ------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -47,8 +46,7 @@ int main()
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-    // glfw создание окна
-    // --------------------
+    // glfw: создание окна
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL for Ravesli.com!", NULL, NULL);
     if (window == NULL)
     {
@@ -61,30 +59,26 @@ int main()
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
-    // говорим GLFW захватить нашу мышку
+    // Сообщаем GLFW, чтобы он захватил наш курсор
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: загрузка всех указателей на OpenGL-функции
-    // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
 
-    // конфигурирование глобального состояния OpenGL
-    // -----------------------------
+    // Конфигурирование глобального состояния OpenGL
     glEnable(GL_DEPTH_TEST);
 
-    // компилирование нашей шейдерной программы
-    // -------------------------
+    // Компилирование нашей шейдерной программы
     Shader shader("../5.1.framebuffers.vs", "../5.1.framebuffers.fs");
     Shader screenShader("../5.1.framebuffers_screen.vs", "../5.1.framebuffers_screen.fs");
 
-    // установка вершинных данных (буффера(-ов)) и настройка вершинных атрибутов
-    // ------------------------------------------------------------------
+    // Указание вершинных данных и настройка вершинных атрибутов
     float cubeVertices[] = {
-        // координаты          // текстурные координаты
+         // координаты        // текстурные координаты
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
          0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
          0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
@@ -128,7 +122,7 @@ int main()
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
     float planeVertices[] = {
-        // координаты          // текстурные координаты 
+         // координаты        // текстурные координаты 
          5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
         -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
         -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
@@ -138,7 +132,7 @@ int main()
          5.0f, -0.5f, -5.0f,  2.0f, 2.0f
     };
     float quadVertices[] = { // атрибуты вершин в нормализованных координатах устройства для прямоугольника, который имеет размеры экрана 
-        // координаты   // текстурные координаты
+         // координаты // текстурные координаты
         -1.0f,  1.0f,  0.0f, 1.0f,
         -1.0f, -1.0f,  0.0f, 0.0f,
          1.0f, -1.0f,  1.0f, 0.0f,
@@ -147,6 +141,7 @@ int main()
          1.0f, -1.0f,  1.0f, 0.0f,
          1.0f,  1.0f,  1.0f, 1.0f
     };
+	
     // VAO куба
     unsigned int cubeVAO, cubeVBO;
     glGenVertexArrays(1, &cubeVAO);
@@ -158,7 +153,8 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    // VAO пола
+    
+	// VAO пола
     unsigned int planeVAO, planeVBO;
     glGenVertexArrays(1, &planeVAO);
     glGenBuffers(1, &planeVBO);
@@ -169,7 +165,8 @@ int main()
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    // VAO прямоугольника
+    
+	// VAO прямоугольника
     unsigned int quadVAO, quadVBO;
     glGenVertexArrays(1, &quadVAO);
     glGenBuffers(1, &quadVBO);
@@ -181,25 +178,23 @@ int main()
     glEnableVertexAttribArray(1);
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
 
-    // загрузка текстур
-    // -------------
+    // Загрузка текстур
     unsigned int cubeTexture = loadTexture("../resources/textures/wooden_container.jpg");
     unsigned int floorTexture = loadTexture("../resources/textures/metal.jpg");
 
-    // конфигурация шейдера
-    // --------------------
+    // Конфигурация шейдера
     shader.use();
     shader.setInt("texture1", 0);
 
     screenShader.use();
     screenShader.setInt("screenTexture", 0);
 
-    // конфигурация фреймбуфера
-    // -------------------------
+    // Конфигурация фреймбуфера
     unsigned int framebuffer;
     glGenFramebuffers(1, &framebuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-    // создание текстуры для прикрепляемого объекта цвета
+	
+    // Создание текстуры для прикрепляемого объекта цвета
     unsigned int textureColorbuffer;
     glGenTextures(1, &textureColorbuffer);
     glBindTexture(GL_TEXTURE_2D, textureColorbuffer);
@@ -207,42 +202,41 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureColorbuffer, 0);
-    // создание объекта рендербуфера дла прикрепляемых объектов глубины и трафарета (сэмплирование мы не будет здесь проводить)
+	
+    // Создание объекта рендербуфера дла прикрепляемых объектов глубины и трафарета (сэмплирование мы не будет здесь проводить)
     unsigned int rbo;
     glGenRenderbuffers(1, &rbo);
     glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT); // использование одного объекта рендербуфера для буферов глубины и трафарета.
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, SCR_WIDTH, SCR_HEIGHT); // использование одного объекта рендербуфера для буферов глубины и трафарета
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo); // теперь прикрепляем это дело
-    // теперь, когда мы создали фреймбуфер и прикрепили все необходимые объекты, проверяет завершение формирование фреймбуфера
+    
+	// Теперь, когда мы создали фреймбуфер и прикрепили все необходимые объекты, проверяем завершение формирования фреймбуфера
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete!" << endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // отрисовка в режиме каркаса
-    //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    // Отрисовка в режиме каркаса
+    // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    // цикл рендеринга
-    // -----------
+    // Цикл рендеринга
     while (!glfwWindowShouldClose(window))
     {
-        // логическая часть работы со временем для каждого кадра
-        // --------------------
+        // Логическая часть работы со временем для каждого кадра
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // обработка ввода
-        // -----
+        // Обработка ввода
         processInput(window);
 
 
-        // рендеринг
-        // ------
-        // привязываем фреймбуфер и отрисовываем сцену в текстуру 
+        // Рендеринг
+
+        // Привязываем фреймбуфер и отрисовываем сцену в текстуру 
         glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
         glEnable(GL_DEPTH_TEST); // включение режима теста глубины 
 
-        // убеждаемся, что очистили содержимое фреймбуфера
+        // Убеждаемся, что очистили содержимое фреймбуфера
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -252,7 +246,8 @@ int main()
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         shader.setMat4("view", view);
         shader.setMat4("projection", projection);
-        // кубы
+		
+        // Кубы
         glBindVertexArray(cubeVAO);
         glActiveTexture(GL_TEXTURE0);
         glBindTexture(GL_TEXTURE_2D, cubeTexture);
@@ -263,34 +258,34 @@ int main()
         model = glm::translate(model, glm::vec3(2.0f, 0.0f, 0.0f));
         shader.setMat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
-        // пол
+		
+        // Пол
         glBindVertexArray(planeVAO);
         glBindTexture(GL_TEXTURE_2D, floorTexture);
         shader.setMat4("model", glm::mat4(1.0f));
         glDrawArrays(GL_TRIANGLES, 0, 6);
         glBindVertexArray(0);
 
-        // теперь снова привязывемся к фреймбуферу, заданному по умолчанию и отрисовываем прямоугольник с прикрепленной цветовой текстурой фреймбуфера
+        // Теперь снова привязывемся к фреймбуферу, заданному по умолчанию и отрисовываем прямоугольник с прикрепленной цветовой текстурой фреймбуфера
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
-        glDisable(GL_DEPTH_TEST); // отключаем режим теста глубины. Теперь экранный прямоугольник не будет отсекаться в результате прохождения данного теста.
-        // очищаем все сопутствующие буферы
-        glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // устанавливаем цвет заливки на "белый" (установите прозрачный цвет на белый (на самом деле это не обязательно, так как мы все равно не сможем видеть пространство за прямоугольником)
+        glDisable(GL_DEPTH_TEST); // отключаем режим теста глубины. Теперь экранный прямоугольник не будет отсекаться в результате прохождения данного теста
+        
+		// Очищаем все сопутствующие буферы
+        glClearColor(1.0f, 1.0f, 1.0f, 1.0f); // устанавливаем цвет заливки на "белый" (установите прозрачный цвет на белый (на самом деле это не обязательно, так как мы все равно не сможем видеть пространство за прямоугольником))
         glClear(GL_COLOR_BUFFER_BIT);
 
         screenShader.use();
         glBindVertexArray(quadVAO);
-        glBindTexture(GL_TEXTURE_2D, textureColorbuffer);	// используем прикрепленную цветовую текстуру в качестве текстуры для прямоугольника
+        glBindTexture(GL_TEXTURE_2D, textureColorbuffer); // используем прикрепленную цветовую текстуру в качестве текстуры для прямоугольника
         glDrawArrays(GL_TRIANGLES, 0, 6);
 
 
-        // glfw: обмен содержимым переднего и заднего буферов. Опрос событий Ввода\Ввывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
-        // -------------------------------------------------------------------------------
+        // glfw: обмен содержимым front- и back- буферов. Отслеживание событий ввода/вывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
 
-    // опционально: освобеждение памяти, выделенной под ресурсы
-    // ------------------------------------------------------------------------
+    // Опционально: освобождаем все ресурсы, как только они выполнили свое предназначение
     glDeleteVertexArrays(1, &cubeVAO);
     glDeleteVertexArrays(1, &planeVAO);
     glDeleteVertexArrays(1, &quadVAO);
@@ -303,7 +298,6 @@ int main()
 }
 
 // Обработка всех событий ввода: запрос GLFW о нажатии/отпускании кнопки мыши в данном кадре и соответствующая обработка данных событий
-// ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -319,17 +313,15 @@ void processInput(GLFWwindow* window)
         camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
-// glfw: всякий раз, когда изменяются размеры окна (пользователем или опер. системой), вызывается данная функция
-// ---------------------------------------------------------------------------------------------
+// glfw: всякий раз, когда изменяются размеры окна (пользователем или операционной системой), вызывается данная callback-функция
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // убеждаемся, что вьюпорт соответствует новым размерам окна; обратите внимание,
-    // что ширина и высота будут значительно больше, чем указано на retina -дисплеях.
+    // Убеждаемся, что окно просмотра соответствует новым размерам окна.
+    // Обратите внимание, ширина и высота будут значительно больше, чем указано, на Retina-дисплеях
     glViewport(0, 0, width, height);
 }
 
 // glfw: всякий раз, когда перемещается мышь, вызывается данная callback-функция
-// -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
     if (firstMouse)
@@ -340,7 +332,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     }
 
     float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // перевернуто, так как Y-координаты идут снизу вверх
+    float yoffset = lastY - ypos; // перевернуто, так как y-координаты идут снизу вверх
 
     lastX = xpos;
     lastY = ypos;
@@ -349,14 +341,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 }
 
 // glfw: всякий раз, когда прокручивается колесико мыши, вызывается данная callback-функция
-// ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     camera.ProcessMouseScroll(yoffset);
 }
 
-// вспомогательная функция загрузки 2D-текстур из файла
-// ---------------------------------------------------
+// Вспомогательная функция загрузки 2D-текстур из файла
 unsigned int loadTexture(char const* path)
 {
     unsigned int textureID;

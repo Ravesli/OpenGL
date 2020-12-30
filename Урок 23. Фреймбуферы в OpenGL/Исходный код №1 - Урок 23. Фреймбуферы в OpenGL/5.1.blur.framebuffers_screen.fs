@@ -9,15 +9,15 @@ const float offset = 1.0 / 300.0;
 void main()
 {
     vec2 offsets[9] = vec2[](
-        vec2(-offset,  offset), // top-left
-        vec2( 0.0f,    offset), // top-center
-        vec2( offset,  offset), // top-right
-        vec2(-offset,  0.0f),   // center-left
-        vec2( 0.0f,    0.0f),   // center-center
-        vec2( offset,  0.0f),   // center-right
-        vec2(-offset, -offset), // bottom-left
-        vec2( 0.0f,   -offset), // bottom-center
-        vec2( offset, -offset)  // bottom-right    
+        vec2(-offset,  offset), // верхний-левый
+        vec2( 0.0f,    offset), // верхний-центральный
+        vec2( offset,  offset), // верхний-правый
+        vec2(-offset,  0.0f),   // центральный-левый
+        vec2( 0.0f,    0.0f),   // центральный-центральный
+        vec2( offset,  0.0f),   // центральный-правый
+        vec2(-offset, -offset), // нижний-левый
+        vec2( 0.0f,   -offset), // нижний-центральный
+        vec2( offset, -offset)  // нижний-правый    
     );
 
     float kernel[9] = float[](
