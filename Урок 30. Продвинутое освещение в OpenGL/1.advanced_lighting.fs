@@ -15,14 +15,17 @@ uniform bool blinn;
 void main()
 {           
     vec3 color = texture(floorTexture, fs_in.TexCoords).rgb;
-    // фоновая составляющая
+	
+    // Фоновая составляющая
     vec3 ambient = 0.05 * color;
-    // диффузная составляющая
+	
+    // Диффузная составляющая
     vec3 lightDir = normalize(lightPos - fs_in.FragPos);
     vec3 normal = normalize(fs_in.Normal);
     float diff = max(dot(lightDir, normal), 0.0);
     vec3 diffuse = diff * color;
-    // отраженная составляющая
+	
+    // Отраженная составляющая
     vec3 viewDir = normalize(viewPos - fs_in.FragPos);
     vec3 reflectDir = reflect(-lightDir, normal);
     float spec = 0.0;
