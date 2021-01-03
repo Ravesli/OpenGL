@@ -20,7 +20,7 @@ uniform bool reverse_normals;
 void main()
 {
     vs_out.FragPos = vec3(model * vec4(aPos, 1.0));
-    if(reverse_normals) // небольшой трюк, чтобы быть уверенными, что внешний куб-комната отображает освещение "изнутри", а не "снаружи"  
+    if(reverse_normals) // РЅРµР±РѕР»СЊС€РѕР№ С‚СЂСЋРє, С‡С‚РѕР±С‹ Р±С‹С‚СЊ СѓРІРµСЂРµРЅРЅС‹РјРё, С‡С‚Рѕ РІРЅРµС€РЅРёР№ РєСѓР±-РєРѕРјРЅР°С‚Р° РѕС‚РѕР±СЂР°Р¶Р°РµС‚ РѕСЃРІРµС‰РµРЅРёРµ "РёР·РЅСѓС‚СЂРё", Р° РЅРµ "СЃРЅР°СЂСѓР¶Рё"  
         vs_out.Normal = transpose(inverse(mat3(model))) * (-1.0 * aNormal);
     else
         vs_out.Normal = transpose(inverse(mat3(model))) * aNormal;
