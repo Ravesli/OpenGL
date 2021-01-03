@@ -8,10 +8,10 @@ void main()
 {
     float lightDistance = length(FragPos.xyz - lightPos);
     
-    // приводим значение к диапазону [0;1] путем деления на far_plane
+    // Приводим значение к диапазону [0; 1] путем деления на far_plane
     lightDistance = lightDistance / far_plane;
     
-    // записываем его в качестве измененной глубины
+    // Записываем его в качестве измененной глубины
     gl_FragDepth = lightDistance;
 }
 

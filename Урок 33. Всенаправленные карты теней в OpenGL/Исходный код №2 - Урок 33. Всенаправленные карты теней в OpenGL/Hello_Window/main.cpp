@@ -20,26 +20,26 @@ unsigned int loadTexture(const char* path);
 void renderScene(const Shader& shader);
 void renderCube();
 
-// настройки
+// Константы
 const unsigned int SCR_WIDTH = 600;
 const unsigned int SCR_HEIGHT = 400;
+
 bool shadows = true;
 bool shadowsKeyPressed = false;
 
-// камера
+// Камера
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
 bool firstMouse = true;
 
-// тайминги
+// Тайминги
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 int main()
 {
     // glfw: инициализация и конфигурирование
-    // ------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -50,7 +50,6 @@ int main()
 #endif
 
     // glfw: создание окна
-    // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL for Ravesli.com!", NULL, NULL);
     if (window == NULL)
     {
@@ -63,37 +62,33 @@ int main()
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
-    // говорим GLFW захватить курсор нашей мышки
+    // Сообщаем GLFW, чтобы он захватил наш курсор
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: загрузка всех указателей на OpenGL-функции
-    // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
 
-    // конфигурирование глобального состояния OpenGL
-    // -----------------------------
+    // Конфигурирование глобального состояния OpenGL
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);
 
-    // компилирование нашей шейдерной программы
-    // -------------------------
+    // Компилирование нашей шейдерной программы
     Shader shader("../3.2.2.point_shadows.vs", "../3.2.2.point_shadows.fs");
     Shader simpleDepthShader("../3.2.2.point_shadows_depth.vs", "../3.2.2.point_shadows_depth.fs", "../3.2.2.point_shadows_depth.gs");
 
-    // загрузка текстур
-    // -------------
+    // Загрузка текстур
     unsigned int woodTexture = loadTexture("../resources/textures/wood.png");
 
-    // настраиваем карту глубины FBO
-    // -----------------------
+    // Настраиваем карту глубины FBO
     const unsigned int SHADOW_WIDTH = 1024, SHADOW_HEIGHT = 1024;
     unsigned int depthMapFBO;
     glGenFramebuffers(1, &depthMapFBO);
-    // создаём текстуру кубической карты глубины
+	
+    // Создаем текстуру кубической карты глубины
     unsigned int depthCubemap;
     glGenTextures(1, &depthCubemap);
     glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
@@ -104,7 +99,8 @@ int main()
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    // прикрепляем текстуру глубины в качестве буфера глубины для FBO
+	
+    // Прикрепляем текстуру глубины в качестве буфера глубины для FBO
     glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
     glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, depthCubemap, 0);
     glDrawBuffer(GL_NONE);
@@ -112,40 +108,33 @@ int main()
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
-    // конфигурация шейдеров
-    // --------------------
+    // Конфигурация шейдеров
     shader.use();
     shader.setInt("diffuseTexture", 0);
     shader.setInt("depthMap", 1);
 
-    // параметры освещения
-    // -------------
+    // Параметры освещения
     glm::vec3 lightPos(0.0f, 0.0f, 0.0f);
 
-    // цикл рендеринга
-    // -----------
+    // Цикл рендеринга
     while (!glfwWindowShouldClose(window))
     {
-        // логическая часть работы со временем для каждого кадра
-        // --------------------
+        // Логическая часть работы со временем для каждого кадра
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // обработка ввода
-        // -----
+        // Обработка ввода
         processInput(window);
 
-        // изменение позиции источника света с течением времени
+        // Изменение позиции источника света с течением времени
         lightPos.z = sin(glfwGetTime() * 0.5) * 3.0;
 
-        // рендер
-        // ------
+        // Рендер
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // 0. создаём матрицы трансформации кубической карты глубины
-        // -----------------------------------------------
+        // 0. Создаем матрицы трансформации кубической карты глубины
         float near_plane = 1.0f;
         float far_plane = 25.0f;
         glm::mat4 shadowProj = glm::perspective(glm::radians(90.0f), (float)SHADOW_WIDTH / (float)SHADOW_HEIGHT, near_plane, far_plane);
@@ -157,8 +146,7 @@ int main()
         shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, 1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
         shadowTransforms.push_back(shadowProj * glm::lookAt(lightPos, lightPos + glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 
-        // 1. рендерим сцену в кубическую карту глубины
-        // --------------------------------
+        // 1. Рендерим сцену в кубическую карту глубины
         glViewport(0, 0, SHADOW_WIDTH, SHADOW_HEIGHT);
         glBindFramebuffer(GL_FRAMEBUFFER, depthMapFBO);
         glClear(GL_DEPTH_BUFFER_BIT);
@@ -170,8 +158,7 @@ int main()
         renderScene(simpleDepthShader);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-        // 2. рендерим сцену как обычно
-        // -------------------------
+        // 2. Рендерим сцену как обычно
         glViewport(0, 0, SCR_WIDTH, SCR_HEIGHT);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shader.use();
@@ -179,7 +166,8 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
-        // устанавливаем uniform-переменные освещения
+		
+        // Устанавливаем uniform-переменные освещения
         shader.setVec3("lightPos", lightPos);
         shader.setVec3("viewPos", camera.Position);
         shader.setInt("shadows", shadows); // "Пробел" включает/отключает тени
@@ -190,8 +178,7 @@ int main()
         glBindTexture(GL_TEXTURE_CUBE_MAP, depthCubemap);
         renderScene(shader);
 
-        // glfw: обмен содержимым переднего и заднего буферов. Опрос событий Ввода\Ввывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
-        // -------------------------------------------------------------------------------
+        // glfw: обмен содержимым front- и back- буферов. Отслеживание событий ввода/вывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -200,11 +187,10 @@ int main()
     return 0;
 }
 
-// рендерим 3D-сцену
-// --------------------
+// Рендерим 3D-сцену
 void renderScene(const Shader& shader)
 {
-    // комната
+    // Комната
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::scale(model, glm::vec3(5.0f));
     shader.setMat4("model", model);
@@ -213,7 +199,8 @@ void renderScene(const Shader& shader)
     renderCube();
     shader.setInt("reverse_normals", 0); // ну а теперь отключаем инвертирование нормалей
     glEnable(GL_CULL_FACE);
-    // cubes
+	
+    // Кубы
     model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(4.0f, -3.5f, 0.0));
     model = glm::scale(model, glm::vec3(0.5f));
@@ -242,52 +229,56 @@ void renderScene(const Shader& shader)
     renderCube();
 }
 
-// renderCube() рендерит 1x1 3D-ящик в NDC.
-// -------------------------------------------------
+// renderCube() рендерит 1x1 3D-ящик в NDC
 unsigned int cubeVAO = 0;
 unsigned int cubeVBO = 0;
 void renderCube()
 {
-    // инициализация (если необходимо)
+    // Инициализация (если необходимо)
     if (cubeVAO == 0)
     {
         float vertices[] = {
-            // задняя грань
+             // задняя грань
             -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // нижняя-левая
              1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // верхняя-правая
              1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // нижняя-правая         
              1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // верхняя-правая
             -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // нижняя-левая
             -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // верхняя-левая
-            // передняя грань
+             
+			 // передняя грань
             -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // нижняя-левая
              1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // нижняя-правая
              1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // верхняя-правая
              1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // верхняя-правая
             -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // верхняя-левая
             -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // нижняя-левая
-            // грань слева
+             
+			 // грань слева
             -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // верхняя-правая
             -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // верхняя-левая
             -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // нижняя-левая
             -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // нижняя-левая
             -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // нижняя-правая
             -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // верхняя-правая
-            // грань справа
+             
+			 // грань справа
              1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // верхняя-левая
              1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // нижняя-правая
              1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // верхняя-правая         
              1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // нижняя-правая
              1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // верхняя-левая
              1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // нижняя-левая     
-            // нижняя грань
+             
+			 // нижняя грань
             -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // верхняя-правая
              1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // верхняя-левая
              1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // нижняя-левая
              1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // нижняя-левая
             -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // нижняя-правая
             -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // верхняя-правая
-            // верхняя грань
+             
+			 // верхняя грань
             -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // верхняя-левая
              1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // нижняя-правая
              1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // верхняя-правая     
@@ -297,10 +288,12 @@ void renderCube()
         };
         glGenVertexArrays(1, &cubeVAO);
         glGenBuffers(1, &cubeVBO);
-        // заполняем буфер
+		
+        // Заполняем буфер
         glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        // связываем вершинные атрибуты
+        
+		// Связываем вершинные атрибуты
         glBindVertexArray(cubeVAO);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
@@ -311,14 +304,14 @@ void renderCube()
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
-    // рендер ящика
+	
+    // Рендер ящика
     glBindVertexArray(cubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
 }
 
 // Обработка всех событий ввода: запрос GLFW о нажатии/отпускании кнопки мыши в данном кадре и соответствующая обработка данных событий
-// ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -344,17 +337,15 @@ void processInput(GLFWwindow* window)
     }
 }
 
-// glfw: всякий раз, когда изменяются размеры окна (пользователем или опер. системой), вызывается данная функция
-// ---------------------------------------------------------------------------------------------
+// glfw: всякий раз, когда изменяются размеры окна (пользователем или операционной системой), вызывается данная callback-функция
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // убеждаемся, что вьюпорт соответствует новым размерам окна; обратите внимание,
-    // что ширина и высота будут значительно больше, чем указано на retina -дисплеях.
+    // Убеждаемся, что окно просмотра соответствует новым размерам окна.
+    // Обратите внимание, ширина и высота будут значительно больше, чем указано, на Retina-дисплеях
     glViewport(0, 0, width, height);
 }
 
 // glfw: всякий раз, когда перемещается мышь, вызывается данная callback-функция
-// -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
     if (firstMouse)
@@ -365,7 +356,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     }
 
     float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // перевернуто, так как Y-координаты идут снизу вверх
+    float yoffset = lastY - ypos; // перевернуто, так как y-координаты идут снизу вверх
 
     lastX = xpos;
     lastY = ypos;
@@ -374,14 +365,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 }
 
 // glfw: всякий раз, когда прокручивается колесико мыши, вызывается данная callback-функция
-// ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     camera.ProcessMouseScroll(yoffset);
 }
 
-// вспомогательная функция загрузки 2D-текстур из файла
-// ---------------------------------------------------
+// Вспомогательная функция загрузки 2D-текстур из файла
 unsigned int loadTexture(char const* path)
 {
     unsigned int textureID;
