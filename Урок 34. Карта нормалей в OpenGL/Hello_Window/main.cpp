@@ -19,24 +19,23 @@ void processInput(GLFWwindow *window);
 unsigned int loadTexture(const char *path);
 void renderQuad();
 
-// настройки
+// Константы
 const unsigned int SCR_WIDTH = 600;
 const unsigned int SCR_HEIGHT = 400;
 
-// камера
+// Камера
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
 bool firstMouse = true;
 
-// тайминги
+// Тайминги
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 int main()
 {
     // glfw: инициализация и конфигурирование
-    // ------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -47,7 +46,6 @@ int main()
 #endif
 
     // glfw: создание окна
-    // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL for Ravesli.com!", NULL, NULL);
     if (window == NULL)
     {
@@ -60,66 +58,57 @@ int main()
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
-    // говорим GLFW захватить курсор нашей мышки
+    // Сообщаем GLFW, чтобы он захватил наш курсор
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: загрузка всех указателей на OpenGL-функции
-    // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
 
-    // конфигурирование глобального состояния OpenGL
-    // -----------------------------
+    // Конфигурирование глобального состояния OpenGL
     glEnable(GL_DEPTH_TEST);
 
-    // компилирование нашей шейдерной программы
-    // -------------------------
+    // Компилирование нашей шейдерной программы
     Shader shader("../4.normal_mapping.vs", "../4.normal_mapping.fs");
 
-    // загрузка текстур
-    // -------------
+    // Загрузка текстур
     unsigned int diffuseMap = loadTexture("../resources/textures/brickwall.jpg");
     unsigned int normalMap  = loadTexture("../resources/textures/brickwall_normal.jpg");
 
-    // конфигурация шейдеров
-    // --------------------
+    // Конфигурация шейдеров
     shader.use();
     shader.setInt("diffuseMap", 0);
     shader.setInt("normalMap", 1);
 
-    // параметры освещения
-    // -------------
+    // Параметры освещения
     glm::vec3 lightPos(0.5f, 1.0f, 0.3f);
 
-    // цикл рендеринга
-    // -----------
+    // Цикл рендеринга
     while (!glfwWindowShouldClose(window))
     {
-        // логическая часть работы со временем для каждого кадра
-        // --------------------
+        // Логическая часть работы со временем для каждого кадра
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // обработка ввода
-        // -----
+        // Обработка ввода
         processInput(window);
 
-        // рендер
-        // ------
+        // Рендер
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // конфигурирование матриц вида/проекции
+        // Конфигурирование матриц вида/проекции
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         shader.use();
         shader.setMat4("projection", projection);
         shader.setMat4("view", view);
-        // рендерим прямоугольник с наложенной картой нормалей
+		
+        // Рендерим прямоугольник с наложенной картой нормалей
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::rotate(model, glm::radians((float)glfwGetTime() * -10.0f), glm::normalize(glm::vec3(1.0, 0.0, 1.0))); // поворачиваем прямоугольник для демонстрации работы карты нормалей со всех сторон
         shader.setMat4("model", model);
@@ -131,15 +120,14 @@ int main()
         glBindTexture(GL_TEXTURE_2D, normalMap);
         renderQuad();
 
-        // рендеринг источника света (для простоты используется уменьшенная плоскость, размещенная на месте источника света)
+        // Рендеринг источника света (для простоты используется уменьшенная плоскость, размещенная на месте источника света)
         model = glm::mat4(1.0f);
         model = glm::translate(model, lightPos);
         model = glm::scale(model, glm::vec3(0.1f));
         shader.setMat4("model", model);
         renderQuad();
 
-        // glfw: обмен содержимым переднего и заднего буферов. Опрос событий Ввода\Ввывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
-        // -------------------------------------------------------------------------------
+        // glfw: обмен содержимым front- и back- буферов. Отслеживание событий ввода/вывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -148,32 +136,33 @@ int main()
     return 0;
 }
 
-// рендерим 1x1-прямоугольник в NDC с вычисленными вручную касательными векторами
-// ------------------------------------------------------------------
+// Рендерим 1x1-прямоугольник в NDC с вычисленными вручную касательными векторами
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
 void renderQuad()
 {
     if (quadVAO == 0)
     {
-        // координаты
+        // Координаты
         glm::vec3 pos1(-1.0f,  1.0f, 0.0f);
         glm::vec3 pos2(-1.0f, -1.0f, 0.0f);
         glm::vec3 pos3( 1.0f, -1.0f, 0.0f);
         glm::vec3 pos4( 1.0f,  1.0f, 0.0f);
-        // текстурные координаты
+		
+        // Текстурные координаты
         glm::vec2 uv1(0.0f, 1.0f);
         glm::vec2 uv2(0.0f, 0.0f);
         glm::vec2 uv3(1.0f, 0.0f);  
         glm::vec2 uv4(1.0f, 1.0f);
-        // вектор нормали
+		
+        // Вектор нормали
         glm::vec3 nm(0.0f, 0.0f, 1.0f);
 
-        // вычисляем касательные/бикасательные векторы обоих треугольников
+        // Вычисляем касательные/бикасательные векторы обоих треугольников
         glm::vec3 tangent1, bitangent1;
         glm::vec3 tangent2, bitangent2;
-        // треугольник 1
-        // ----------
+		
+        // Треугольник №1
         glm::vec3 edge1 = pos2 - pos1;
         glm::vec3 edge2 = pos3 - pos1;
         glm::vec2 deltaUV1 = uv2 - uv1;
@@ -189,8 +178,7 @@ void renderQuad()
         bitangent1.y = f * (-deltaUV2.x * edge1.y + deltaUV1.x * edge2.y);
         bitangent1.z = f * (-deltaUV2.x * edge1.z + deltaUV1.x * edge2.z);
 
-        // треугольник 2
-        // ----------
+        // Треугольник №2
         edge1 = pos3 - pos1;
         edge2 = pos4 - pos1;
         deltaUV1 = uv3 - uv1;
@@ -209,7 +197,7 @@ void renderQuad()
 
 
         float quadVertices[] = {
-            // координаты           // нормали        // текст. координаты         // касательные                    // бикасательные
+            // координаты           // нормали        // текст. координаты      // касательные          // бикасательные
             pos1.x, pos1.y, pos1.z, nm.x, nm.y, nm.z, uv1.x, uv1.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
             pos2.x, pos2.y, pos2.z, nm.x, nm.y, nm.z, uv2.x, uv2.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
             pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent1.x, tangent1.y, tangent1.z, bitangent1.x, bitangent1.y, bitangent1.z,
@@ -218,7 +206,8 @@ void renderQuad()
             pos3.x, pos3.y, pos3.z, nm.x, nm.y, nm.z, uv3.x, uv3.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z,
             pos4.x, pos4.y, pos4.z, nm.x, nm.y, nm.z, uv4.x, uv4.y, tangent2.x, tangent2.y, tangent2.z, bitangent2.x, bitangent2.y, bitangent2.z
         };
-        // конфигурируем VAO плоскости
+		
+        // Конфигурируем VAO плоскости
         glGenVertexArrays(1, &quadVAO);
         glGenBuffers(1, &quadVBO);
         glBindVertexArray(quadVAO);
@@ -241,7 +230,6 @@ void renderQuad()
 }
 
 // Обработка всех событий ввода: запрос GLFW о нажатии/отпускании кнопки мыши в данном кадре и соответствующая обработка данных событий
-// ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -257,17 +245,15 @@ void processInput(GLFWwindow *window)
         camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
-// glfw: всякий раз, когда изменяются размеры окна (пользователем или опер. системой), вызывается данная функция
-// ---------------------------------------------------------------------------------------------
+// glfw: всякий раз, когда изменяются размеры окна (пользователем или операционной системой), вызывается данная callback-функция
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // убеждаемся, что вьюпорт соответствует новым размерам окна; обратите внимание,
-    // что ширина и высота будут значительно больше, чем указано на retina -дисплеях.
+    // Убеждаемся, что окно просмотра соответствует новым размерам окна.
+    // Обратите внимание, ширина и высота будут значительно больше, чем указано, на Retina-дисплеях
     glViewport(0, 0, width, height);
 }
 
 // glfw: всякий раз, когда перемещается мышь, вызывается данная callback-функция
-// -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
     if (firstMouse)
@@ -278,7 +264,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     }
 
     float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // перевернуто, так как Y-координаты идут снизу вверх
+    float yoffset = lastY - ypos; // перевернуто, так как y-координаты идут снизу вверх
 
     lastX = xpos;
     lastY = ypos;
@@ -287,14 +273,12 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 }
 
 // glfw: всякий раз, когда прокручивается колесико мыши, вызывается данная callback-функция
-// ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     camera.ProcessMouseScroll(yoffset);
 }
 
-// вспомогательная функция загрузки 2D-текстур из файла
-// ---------------------------------------------------
+// Вспомогательная функция загрузки 2D-текстур из файла
 unsigned int loadTexture(char const * path)
 {
     unsigned int textureID;

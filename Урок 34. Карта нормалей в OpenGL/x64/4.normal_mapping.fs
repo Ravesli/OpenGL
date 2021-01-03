@@ -17,20 +17,24 @@ uniform vec3 viewPos;
 
 void main()
 {           
-     // получаем нормаль из карты нормалей с диапазоном [0,1]
+    // Получаем нормаль из карты нормалей с диапазоном [0,1]
     vec3 normal = texture(normalMap, fs_in.TexCoords).rgb;
-    // переводим вектор нормали в диапазон [-1,1]
+	
+    // Переводим вектор нормали в диапазон [-1,1]
     normal = normalize(normal * 2.0 - 1.0);  // данная нормаль находится в касательном пространстве
    
-    // получаем диффузный цвет
+    // Получаем диффузный цвет
     vec3 color = texture(diffuseMap, fs_in.TexCoords).rgb;
-    // фоновая составляющая
+	
+    // Фоновая составляющая
     vec3 ambient = 0.1 * color;
-    // диффузная составляющая
+	
+    // Диффузная составляющая
     vec3 lightDir = normalize(fs_in.TangentLightPos - fs_in.TangentFragPos);
     float diff = max(dot(lightDir, normal), 0.0);
     vec3 diffuse = diff * color;
-    // отраженная составляющая
+	
+    // Отраженная составляющая
     vec3 viewDir = normalize(fs_in.TangentViewPos - fs_in.TangentFragPos);
     vec3 reflectDir = reflect(-lightDir, normal);
     vec3 halfwayDir = normalize(lightDir + viewDir);  
