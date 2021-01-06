@@ -20,18 +20,21 @@ void main()
 {           
     vec3 color = texture(diffuseTexture, fs_in.TexCoords).rgb;
     vec3 normal = normalize(fs_in.Normal);
-    // фоновая составляющая
+	
+    // Фоновая составляющая
     vec3 ambient = 0.0 * color;
-    // освещение
+	
+    // Освещение
     vec3 lighting = vec3(0.0);
     for(int i = 0; i < 16; i++)
     {
-        // диффузная составляющая
+        // Диффузная составляющая
         vec3 lightDir = normalize(lights[i].Position - fs_in.FragPos);
         float diff = max(dot(lightDir, normal), 0.0);
         vec3 diffuse = lights[i].Color * diff * color;      
         vec3 result = diffuse;        
-        // затухание (используем квадратичное, так как у нас есть гамма-коррекция)
+		
+        // Затухание (используем квадратичное, так как у нас есть гамма-коррекция)
         float distance = length(fs_in.FragPos - lights[i].Position);
         result *= 1.0 / (distance * distance);
         lighting += result;
