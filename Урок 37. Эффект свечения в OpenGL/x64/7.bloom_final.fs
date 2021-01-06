@@ -14,10 +14,12 @@ void main()
     vec3 hdrColor = texture(scene, TexCoords).rgb;      
     vec3 bloomColor = texture(bloomBlur, TexCoords).rgb;
     if(bloom)
-        hdrColor += bloomColor; // additive blending
-    // тональная компрессия
+        hdrColor += bloomColor; // аддитивное смешение
+		
+    // Тональная компрессия
     vec3 result = vec3(1.0) - exp(-hdrColor * exposure);
-    // гамма-коррекция       
+    
+	// Гамма-коррекция       
     result = pow(result, vec3(1.0 / gamma));
     FragColor = vec4(result, 1.0);
 }
