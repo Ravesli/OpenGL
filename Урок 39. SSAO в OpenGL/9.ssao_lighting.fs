@@ -19,24 +19,27 @@ uniform Light light;
 
 void main()
 {             
-    // получаем данные из g-буфера
+    // Получаем данные из g-буфера
     vec3 FragPos = texture(gPosition, TexCoords).rgb;
     vec3 Normal = texture(gNormal, TexCoords).rgb;
     vec3 Diffuse = texture(gAlbedo, TexCoords).rgb;
     float AmbientOcclusion = texture(ssao, TexCoords).r;
     
-    // затем вычисляем освещение как обычно
+    // Затем вычисляем освещение как обычно
     vec3 ambient = vec3(0.3 * Diffuse * AmbientOcclusion);
     vec3 lighting  = ambient; 
-    vec3 viewDir  = normalize(-FragPos); // viewpos is (0.0.0)
-    // диффузная составляющая
+    vec3 viewDir  = normalize(-FragPos); 
+	
+    // Диффузная составляющая
     vec3 lightDir = normalize(light.Position - FragPos);
     vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * light.Color;
-    // отраженная составляющая
+    
+	// Отраженная составляющая
     vec3 halfwayDir = normalize(lightDir + viewDir);  
     float spec = pow(max(dot(Normal, halfwayDir), 0.0), 8.0);
     vec3 specular = light.Color * spec;
-    // затухание
+    
+	// Затухание
     float distance = length(light.Position - FragPos);
     float attenuation = 1.0 / (1.0 + light.Linear * distance + light.Quadratic * distance * distance);
     diffuse *= attenuation;

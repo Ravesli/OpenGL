@@ -20,17 +20,17 @@ unsigned int loadTexture(const char *path, bool gammaCorrection);
 void renderQuad();
 void renderCube();
 
-// настройки
+// Константы
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-// камера
+// Камера
 Camera camera(glm::vec3(0.0f, 0.0f, 5.0f));
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
 bool firstMouse = true;
 
-// тайминги
+// Тайминги
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
@@ -42,7 +42,6 @@ float lerp(float a, float b, float f)
 int main()
 {
     // glfw: инициализация и конфигурирование
-    // ------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -53,7 +52,6 @@ int main()
 #endif
 
     // glfw: создание окна
-    // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL for Ravesli.com!", NULL, NULL);
     if (window == NULL)
     {
@@ -66,39 +64,35 @@ int main()
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
-    // говорим GLFW захватить курсор нашей мышки
+    // Сообщаем GLFW, чтобы он захватил наш курсор
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: загрузка всех указателей на OpenGL-функции
-    // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
 
-    // конфигурирование глобального состояния OpenGL
-    // -----------------------------
+    // Конфигурирование глобального состояния OpenGL
     glEnable(GL_DEPTH_TEST);
 
-    // компилирование нашей шейдерной программы
-    // -------------------------
+    // Компилирование нашей шейдерной программы
     Shader shaderGeometryPass("../9.ssao_geometry.vs", "../9.ssao_geometry.fs");
     Shader shaderLightingPass("../9.ssao.vs", "../9.ssao_lighting.fs");
     Shader shaderSSAO("../9.ssao.vs", "../9.ssao.fs");
     Shader shaderSSAOBlur("../9.ssao.vs", "../9.ssao_blur.fs");
 
-    // загрузка моделей
-    // -----------
+    // Загрузка моделей
     Model backpack("../resources/objects/backpack/backpack.obj");
 
-    // конфигурирование g-буфера фреймбуфера
-    // ------------------------------
+    // Конфигурирование g-буфера фреймбуфера
     unsigned int gBuffer;
     glGenFramebuffers(1, &gBuffer);
     glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
     unsigned int gPosition, gNormal, gAlbedo;
-    // цветовой буфер позиций
+	
+    // Цветовой буфер позиций
     glGenTextures(1, &gPosition);
     glBindTexture(GL_TEXTURE_2D, gPosition);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
@@ -107,41 +101,46 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
-    // цветовой буфер нормалей
+    
+	// Цветовой буфер нормалей
     glGenTextures(1, &gNormal);
     glBindTexture(GL_TEXTURE_2D, gNormal);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
-    // цветовой буфер значений цвета + отраженной составляющей
+    
+	// Цветовой буфер значений цвета + отраженной составляющей
     glGenTextures(1, &gAlbedo);
     glBindTexture(GL_TEXTURE_2D, gAlbedo);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, SCR_WIDTH, SCR_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedo, 0);
-    // указываем OpenGL на то, в какой прикрепленный цветовой буфер (заданного фреймбуфера) мы собираемся выполнять рендеринг 
+    
+	// Указываем OpenGL на то, в какой прикрепленный цветовой буфер (заданного фреймбуфера) мы собираемся выполнять рендеринг 
     unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers(3, attachments);
-    // создаем и прикрепляем буфер глубины (рендербуфер)
+	
+    // Создаем и прикрепляем буфер глубины (рендербуфер)
     unsigned int rboDepth;
     glGenRenderbuffers(1, &rboDepth);
     glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, SCR_WIDTH, SCR_HEIGHT);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-    // проверяем готовность фреймбуфера
+    
+	// Проверяем готовность фреймбуфера
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "Framebuffer not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // также создадим фреймбуфер для стадии SSAO-вычислений 
-    // -----------------------------------------------------
+    // Также создадим фреймбуфер для стадии SSAO-вычислений 
     unsigned int ssaoFBO, ssaoBlurFBO;
     glGenFramebuffers(1, &ssaoFBO);  glGenFramebuffers(1, &ssaoBlurFBO);
     glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
     unsigned int ssaoColorBuffer, ssaoColorBufferBlur;
-    // цветовой буфер SSAO 
+	
+    // Цветовой буфер SSAO 
     glGenTextures(1, &ssaoColorBuffer);
     glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, SCR_WIDTH, SCR_HEIGHT, 0, GL_RED, GL_FLOAT, NULL);
@@ -150,7 +149,8 @@ int main()
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "SSAO Framebuffer not complete!" << std::endl;
-    // и стадия размытия
+    
+	// И стадия размытия
     glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
     glGenTextures(1, &ssaoColorBufferBlur);
     glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
@@ -162,8 +162,7 @@ int main()
         std::cout << "SSAO Blur Framebuffer not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // генерируем ядро выборки
-    // ----------------------
+    // Генерируем ядро выборки
     std::uniform_real_distribution<GLfloat> randomFloats(0.0, 1.0); // генерируем случайное число типа float в диапазоне между 0.0 и 1.0
     std::default_random_engine generator;
     std::vector<glm::vec3> ssaoKernel;
@@ -174,14 +173,13 @@ int main()
         sample *= randomFloats(generator);
         float scale = float(i) / 64.0;
 
-        // масштабируем точки выборкичтобы они распологались ближе к центру ядра
+        // Масштабируем точки выборки, чтобы они распологались ближе к центру ядра
         scale = lerp(0.1f, 1.0f, scale * scale);
         sample *= scale;
         ssaoKernel.push_back(sample);
     }
 
-    // генерируем текстуру шума
-    // ----------------------
+    // Генерируем текстуру шума
     std::vector<glm::vec3> ssaoNoise;
     for (unsigned int i = 0; i < 16; i++)
     {
@@ -196,13 +194,11 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-    // параметры освещения
-    // -------------
+    // Параметры освещения
     glm::vec3 lightPos = glm::vec3(2.0, 4.0, -2.0);
     glm::vec3 lightColor = glm::vec3(0.2, 0.2, 0.7);
 
-    // конфигурация шейдеров
-    // --------------------
+    // Конфигурация шейдеров
     shaderLightingPass.use();
     shaderLightingPass.setInt("gPosition", 0);
     shaderLightingPass.setInt("gNormal", 1);
@@ -215,27 +211,22 @@ int main()
     shaderSSAOBlur.use();
     shaderSSAOBlur.setInt("ssaoInput", 0);
 
-    // цикл рендеринга
-    // -----------
+    // Цикл рендеринга
     while (!glfwWindowShouldClose(window))
     {
-        // логическая часть работы со временем для каждого кадра
-        // --------------------
+        // Логическая часть работы со временем для каждого кадра
         float currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-        // обработка ввода
-        // -----
+        // Обработка ввода
         processInput(window);
 
-        // рендер
-        // ------
+        // Рендер
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        // 1. геометрический проход: выполняем рендеринг геометрических/цветовых данных сцены в g-буфер
-        // -----------------------------------------------------------------
+        // 1. Геометрический проход: выполняем рендеринг геометрических/цветовых данных сцены в g-буфер
         glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 50.0f);
@@ -244,7 +235,8 @@ int main()
             shaderGeometryPass.use();
             shaderGeometryPass.setMat4("projection", projection);
             shaderGeometryPass.setMat4("view", view);
-            // комната
+			
+            // Комната
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(0.0, 7.0f, 0.0f));
             model = glm::scale(model, glm::vec3(7.5f, 7.5f, 7.5f));
@@ -252,7 +244,8 @@ int main()
             shaderGeometryPass.setInt("invertedNormals", 1); // инвертируем нормали, т.к. мы внутри куба
             renderCube();
             shaderGeometryPass.setInt("invertedNormals", 0); 
-            // модель рюкзака-гитары, лежащая на полу
+			
+            // Модель рюкзака-гитары, лежащая на полу
             model = glm::mat4(1.0f);
             model = glm::translate(model, glm::vec3(0.0f, 0.5f, 0.0));
             model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0, 0.0, 0.0));
@@ -262,12 +255,12 @@ int main()
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
-        // 2. генерируем текстуру для SSAO
-        // ------------------------
+        // 2. Генерируем текстуру для SSAO
         glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
             glClear(GL_COLOR_BUFFER_BIT);
             shaderSSAO.use();
-            // посылаем ядро + поворот 
+			
+            // Посылаем ядро + поворот 
             for (unsigned int i = 0; i < 64; ++i)
                 shaderSSAO.setVec3("samples[" + std::to_string(i) + "]", ssaoKernel[i]);
             shaderSSAO.setMat4("projection", projection);
@@ -281,8 +274,7 @@ int main()
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
-        // 3. размываем SSAO-текстуру чтобы убрать шум
-        // ------------------------------------
+        // 3. Размываем SSAO-текстуру, чтобы убрать шум
         glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
             glClear(GL_COLOR_BUFFER_BIT);
             shaderSSAOBlur.use();
@@ -292,15 +284,15 @@ int main()
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 
-        // 4. этап прохода освещения: традиционная модель Блинна-Фонга отложенного освещения с добавлением фонового затенения в экранном пространстве
-        // -----------------------------------------------------------------------------------------------------
+        // 4. Этап прохода освещения: традиционная модель Блинна-Фонга отложенного освещения с добавлением фонового затенения в экранном пространстве
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shaderLightingPass.use();
-        // посылаем связанные с освещением  uniform-переменные
+		
         glm::vec3 lightPosView = glm::vec3(camera.GetViewMatrix() * glm::vec4(lightPos, 1.0));
         shaderLightingPass.setVec3("light.Position", lightPosView);
         shaderLightingPass.setVec3("light.Color", lightColor);
-        // обновляем параметры затухания
+		
+        // Обновляем параметры затухания
         const float linear    = 0.09;
         const float quadratic = 0.032;
         shaderLightingPass.setFloat("light.Linear", linear);
@@ -316,8 +308,7 @@ int main()
         renderQuad();
 
 
-        // glfw: обмен содержимым переднего и заднего буферов. Опрос событий Ввода\Ввывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
-        // -------------------------------------------------------------------------------
+        // glfw: обмен содержимым front- и back- буферов. Отслеживание событий ввода/вывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -326,52 +317,56 @@ int main()
     return 0;
 }
 
-// renderCube() рендерит 1x1 3D-ящик в NDC.
-// -------------------------------------------------
+// renderCube() рендерит 1x1 3D-ящик в NDC
 unsigned int cubeVAO = 0;
 unsigned int cubeVBO = 0;
 void renderCube()
 {
-    // инициализация (если необходимо)
+    // Инициализация (если необходимо)
     if (cubeVAO == 0)
     {
         float vertices[] = {
-            // задняя грань
+             // задняя грань
             -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // нижняя-левая
              1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // верхняя-правая
              1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 0.0f, // нижняя-правая         
              1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 1.0f, 1.0f, // верхняя-правая
             -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 0.0f, // нижняя-левая
             -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, -1.0f, 0.0f, 1.0f, // верхняя-левая
-            // передняя грань
+             
+			 // передняя грань
             -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // нижняя-левая
              1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 0.0f, // нижняя-правая
              1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // верхняя-правая
              1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f, 1.0f, // верхняя-правая
             -1.0f,  1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 1.0f, // верхняя-левая
             -1.0f, -1.0f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f, 0.0f, // нижняя-левая
-            // грань слева
+             
+			 // грань слева
             -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // верхняя-правая
             -1.0f,  1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // верхняя-левая
             -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // нижняя-левая
             -1.0f, -1.0f, -1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // нижняя-левая
             -1.0f, -1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // нижняя-правая
             -1.0f,  1.0f,  1.0f, -1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // верхняя-правая
-            // грань справа
+             
+			 // грань справа
              1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // верхняя-левая
              1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // нижняя-правая
              1.0f,  1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 1.0f, // верхняя-правая         
              1.0f, -1.0f, -1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 1.0f, // нижняя-правая
              1.0f,  1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 1.0f, 0.0f, // верхняя-левая
              1.0f, -1.0f,  1.0f,  1.0f,  0.0f,  0.0f, 0.0f, 0.0f, // нижняя-левая     
-            // нижняя грань
+             
+			 // нижняя грань
             -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // верхняя-правая
              1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 1.0f, // верхняя-левая
              1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // нижняя-левая
              1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 1.0f, 0.0f, // нижняя-левая
             -1.0f, -1.0f,  1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 0.0f, // нижняя-правая
             -1.0f, -1.0f, -1.0f,  0.0f, -1.0f,  0.0f, 0.0f, 1.0f, // верхняя-правая
-            // верхняя грань
+             
+			 // верхняя грань
             -1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 0.0f, 1.0f, // верхняя-левая
              1.0f,  1.0f , 1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 0.0f, // нижняя-правая
              1.0f,  1.0f, -1.0f,  0.0f,  1.0f,  0.0f, 1.0f, 1.0f, // верхняя-правая     
@@ -381,10 +376,12 @@ void renderCube()
         };
         glGenVertexArrays(1, &cubeVAO);
         glGenBuffers(1, &cubeVBO);
-        // заполняем буфер
+		
+        // Заполняем буфер
         glBindBuffer(GL_ARRAY_BUFFER, cubeVBO);
         glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-        // связываем вершинные атрибуты
+        
+		// Связываем вершинные атрибуты
         glBindVertexArray(cubeVAO);
         glEnableVertexAttribArray(0);
         glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
@@ -395,15 +392,15 @@ void renderCube()
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
     }
-    // рендер куба
+	
+    // Рендер куба
     glBindVertexArray(cubeVAO);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
 }
 
 
-// renderQuad() рендерит 1x1 XY прямоугольник в NDC
-// -----------------------------------------
+// renderQuad() рендерит 1x1 XY-прямоугольник в NDC
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
 void renderQuad()
@@ -411,13 +408,14 @@ void renderQuad()
     if (quadVAO == 0)
     {
         float quadVertices[] = {
-            // координаты        // текстурные координаты
+             // координаты      // текстурные координаты
             -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
             -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
              1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
              1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
         };
-        // установка VAO плоскости
+		
+        // Установка VAO плоскости
         glGenVertexArrays(1, &quadVAO);
         glGenBuffers(1, &quadVBO);
         glBindVertexArray(quadVAO);
@@ -434,7 +432,6 @@ void renderQuad()
 }
 
 // Обработка всех событий ввода: запрос GLFW о нажатии/отпускании кнопки мыши в данном кадре и соответствующая обработка данных событий
-// ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow *window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -450,17 +447,15 @@ void processInput(GLFWwindow *window)
         camera.ProcessKeyboard(RIGHT, deltaTime);
 }
 
-// glfw: всякий раз, когда изменяются размеры окна (пользователем или опер. системой), вызывается данная функция
-// ---------------------------------------------------------------------------------------------
+// glfw: всякий раз, когда изменяются размеры окна (пользователем или операционной системой), вызывается данная callback-функция
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // убеждаемся, что вьюпорт соответствует новым размерам окна; обратите внимание,
-    // что ширина и высота будут значительно больше, чем указано на retina -дисплеях.
+    // Убеждаемся, что окно просмотра соответствует новым размерам окна.
+    // Обратите внимание, ширина и высота будут значительно больше, чем указано, на Retina-дисплеях
     glViewport(0, 0, width, height);
 }
 
 // glfw: всякий раз, когда перемещается мышь, вызывается данная callback-функция
-// -------------------------------------------------------
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
     if (firstMouse)
@@ -471,7 +466,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     }
 
     float xoffset = xpos - lastX;
-    float yoffset = lastY - ypos; // перевернуто, так как Y-координаты идут снизу вверх
+    float yoffset = lastY - ypos; // перевернуто, так как y-координаты идут снизу вверх
 
     lastX = xpos;
     lastY = ypos;
@@ -480,7 +475,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 }
 
 // glfw: всякий раз, когда прокручивается колесико мыши, вызывается данная callback-функция
-// ----------------------------------------------------------------------
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     camera.ProcessMouseScroll(yoffset);
