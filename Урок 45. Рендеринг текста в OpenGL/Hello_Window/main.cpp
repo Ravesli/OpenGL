@@ -18,16 +18,16 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
 void RenderText(Shader& shader, std::string text, float x, float y, float scale, glm::vec3 color);
 
-// настройки
+// Константы
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
 
-/// Содержит всю информацию о состоянии символа, загруженному с помощью FreeType
+// Содержит всю информацию о состоянии символа, загруженному с помощью библиотеки FreeType
 struct Character {
     unsigned int TextureID; // ID текстуры глифа
-    glm::ivec2   Size;      // Размер глифа
-    glm::ivec2   Bearing;   // Смещение от линии шрифта до верхнего/левого угла глифа
-    unsigned int Advance;   // Смещение до следующего глифа
+    glm::ivec2   Size;      // размер глифа
+    glm::ivec2   Bearing;   // смещение от линии шрифта до верхнего/левого угла глифа
+    unsigned int Advance;   // смещение до следующего глифа
 };
 
 std::map<GLchar, Character> Characters;
@@ -36,7 +36,6 @@ unsigned int VAO, VBO;
 int main()
 {
     // glfw: инициализация и конфигурирование
-    // ------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -47,7 +46,6 @@ int main()
 #endif
 
     // glfw: создание окна
-    // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "OpenGL for Ravesli.com!", NULL, NULL);
     if (window == NULL)
     {
@@ -59,29 +57,26 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     // glad: загрузка всех указателей на OpenGL-функции
-    // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
 
-    // состояние OpenGL
-    // ------------
+    // Состояние OpenGL
     glEnable(GL_CULL_FACE);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    // компилируем и устанавливаем шейдер
-    // ----------------------------
+    // Компилируем и устанавливаем шейдер
     Shader shader("../text.vs", "../text.fs");
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(SCR_WIDTH), 0.0f, static_cast<float>(SCR_HEIGHT));
     shader.use();
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-    // FreeType
-    // --------
+    // Библиотека FreeType
     FT_Library ft;
+	
     // Всякий раз, когда возникает ошибка, функции будут возвращать отличное от нуля значение
     if (FT_Init_FreeType(&ft))
     {
@@ -89,7 +84,7 @@ int main()
         return -1;
     }
 
-    // путь к файлу шрифта
+    // Путь к файлу шрифта
     std::string font_name = "../resources/fonts/a_AlternaSw.TTF";
     if (font_name.empty())
     {
@@ -97,29 +92,30 @@ int main()
         return -1;
     }
 
-    // загружаем шрифт в face
+    // Загружаем шрифт в face
     FT_Face face;
     if (FT_New_Face(ft, font_name.c_str(), 0, &face)) {
         std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
         return -1;
     }
     else {
-        // задаем размер для загрузки глифов
+        // Задаем размер для загрузки глифов
         FT_Set_Pixel_Sizes(face, 0, 48);
 
-        // отключаем ограничение выравнивания байтов
+        // Отключаем ограничение выравнивания байтов
         glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
-        // загружаем глифы символов 
+        // Загружаем глифы символов 
         for (unsigned int c = 0; c < 256; c++)
         {
-            // загружаем глиф символа 
+            // Загружаем глиф символа 
             if (FT_Load_Char(face, c, FT_LOAD_RENDER))
             {
                 std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
                 continue;
             }
-            // генерируем текстуру
+			
+            // Генерируем текстуру
             unsigned int texture;
             glGenTextures(1, &texture);
             glBindTexture(GL_TEXTURE_2D, texture);
@@ -134,12 +130,14 @@ int main()
                 GL_UNSIGNED_BYTE,
                 face->glyph->bitmap.buffer
             );
-            // задаём для текстуры необходимые опции
+			
+            // Задаем для текстуры необходимые опции
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            // теперь сохраняем символ для последующего использования
+            
+			// Теперь сохраняем символ для последующего использования
             Character character = {
                 texture,
                 glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
@@ -150,13 +148,13 @@ int main()
         }
         glBindTexture(GL_TEXTURE_2D, 0);
     }
-    // освобождаем использованные ресурсы
+	
+    // Освобождаем использованные ресурсы
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
 
 
-    // конфигурируем VAO/VBO для текстурных прямоугольников
-    // -----------------------------------
+    // Конфигурируем VAO/VBO для текстурных прямоугольников
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glBindVertexArray(VAO);
@@ -167,24 +165,20 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindVertexArray(0);
 
-    // цикл рендеринга
-    // -----------
+    // Цикл рендеринга
     while (!glfwWindowShouldClose(window))
     {
-        // обработка ввода
-        // -----
+        // Обработка ввода
         processInput(window);
 
-        // рендер
-        // ------
+        // Рендер
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
         RenderText(shader, "Урааа, Получилось!!!", 25.0f, 25.0f, 1.0f, glm::vec3(0.5, 0.8f, 0.2f));
         RenderText(shader, "(C) OpenGL for Ravesli.com", 540.0f, 570.0f, 0.5f, glm::vec3(0.3, 0.7f, 0.9f));
 
-        // glfw: обмен содержимым переднего и заднего буферов. Опрос событий Ввода\Ввывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
-        // -------------------------------------------------------------------------------
+        // glfw: обмен содержимым front- и back- буферов. Отслеживание событий ввода/вывода (была ли нажата/отпущена кнопка, перемещен курсор мыши и т.п.)
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
@@ -194,34 +188,31 @@ int main()
 }
 
 // Обработка всех событий ввода: запрос GLFW о нажатии/отпускании кнопки мыши в данном кадре и соответствующая обработка данных событий
-// ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window)
 {
     if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
 }
 
-// glfw: всякий раз, когда изменяются размеры окна (пользователем или опер. системой), вызывается данная функция
-// ---------------------------------------------------------------------------------------------
+// glfw: всякий раз, когда изменяются размеры окна (пользователем или операционной системой), вызывается данная callback-функция
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
-    // убеждаемся, что вьюпорт соответствует новым размерам окна; обратите внимание,
-    // что ширина и высота будут значительно больше, чем указано на retina -дисплеях.
+    // Убеждаемся, что окно просмотра соответствует новым размерам окна.
+    // Обратите внимание, ширина и высота будут значительно больше, чем указано, на Retina-дисплеях
     glViewport(0, 0, width, height);
 }
 
 
-// рендер строки текста
-// -------------------
+// Рендер строки текста
 void RenderText(Shader& shader, std::string text, float x, float y, float scale, glm::vec3 color)
 {
-    // активируем соответствующее состояние рендеринга	
+    // Активируем соответствующее состояние рендеринга	
     shader.use();
     glUniform3f(glGetUniformLocation(shader.ID, "textColor"), color.x, color.y, color.z);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(VAO);
 
-    // перебираем все символы
+    // Перебираем все символы
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end(); c++)
     {
@@ -232,7 +223,8 @@ void RenderText(Shader& shader, std::string text, float x, float y, float scale,
 
         float w = ch.Size.x * scale;
         float h = ch.Size.y * scale;
-        // обновляем VBO для каждого символа
+		
+        // Обновляем VBO для каждого символа
         float vertices[6][4] = {
             { xpos,     ypos + h,   0.0f, 0.0f },
             { xpos,     ypos,       0.0f, 1.0f },
@@ -242,16 +234,20 @@ void RenderText(Shader& shader, std::string text, float x, float y, float scale,
             { xpos + w, ypos,       1.0f, 1.0f },
             { xpos + w, ypos + h,   1.0f, 0.0f }
         };
-        // рендер текстуру глифа на прямоугольник
+		
+        // Рендерим текстуру глифа на прямоугольник
         glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-        // обновляем содержимое памяти VBO
+		
+        // Обновляем содержимое памяти VBO
         glBindBuffer(GL_ARRAY_BUFFER, VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // обязательно используйте glBufferSubData, а не glBufferData
 
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        // рендер прямоугольника
+		
+        // Рендер прямоугольника
         glDrawArrays(GL_TRIANGLES, 0, 6);
-        // теперь производим смещение для отображения следующего глифа (обратите внимание, что данное смещение измеряется в единицах, составляющих 1/64 пикселя)
+		
+        // Теперь производим смещение для отображения следующего глифа (обратите внимание, что данное смещение измеряется в единицах, составляющих 1/64 пикселя)
         x += (ch.Advance >> 6) * scale; // битовый сдвиг на 6 разрядов, чтобы получить значение в пикселях (2^6 = 64 (разделите количество 1/64-х пикселей на 64, чтобы получить количество пикселей))
     }
     glBindVertexArray(0);
