@@ -14,7 +14,6 @@
 // Данные о состоянии, связанном с игрой
 SpriteRenderer* Renderer;
 
-
 Game::Game(unsigned int width, unsigned int height)
     : State(GAME_ACTIVE), Keys(), Width(width), Height(height)
 {
@@ -28,16 +27,19 @@ Game::~Game()
 
 void Game::Init()
 {
-    // загрузка шейдеров
+    // Загрузка шейдеров
     ResourceManager::LoadShader("../shaders/sprite.vs", "../shaders/sprite.frag", nullptr, "sprite");
-    // конфигурирование шейдеров
+    
+	// Конфигурирование шейдеров
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width),
         static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
     ResourceManager::GetShader("sprite").Use().SetInteger("image", 0);
     ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
-    // установка специфичных для рендеринга элементов управления
+	
+    // Установка специфичных для рендеринга элементов управления
     Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
-    // загрузка текстур
+	
+    // Загрузка текстур
     ResourceManager::LoadTexture("../textures/awesomeface.png", true, "face");
 }
 
