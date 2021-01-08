@@ -18,23 +18,27 @@
 #include "resource_manager.h"
 
 
-/// Класс GameLevel содержит все кирпичи уровней игры, 
-/// а также функционал для загрузки с жесткого диска информации и их рендеринга
+// Класс GameLevel содержит все кирпичи уровней игры, 
+// а также функционал для загрузки с жесткого диска информации и их рендеринга
 class GameLevel
 {
 public:
-    // состояние уровня
+    // Состояние уровня
     std::vector<GameObject> Bricks;
-    // конструктор
+	
+    // Конструктор
     GameLevel() { }
-    // загрузка уровня из файла
+	
+    // Загрузка уровня из файла
     void Load(const char* file, unsigned int levelWidth, unsigned int levelHeight);
-    // рендеринг уровня
+	
+    // Рендеринг уровня
     void Draw(SpriteRenderer& renderer);
-    // проверка, пройден ли уровень (все разрушаемые кирпичи должны быть уничтожены)
+	
+    // Проверка, пройден ли уровень (все разрушаемые кирпичи должны быть уничтожены)
     bool IsCompleted();
 private:
-    // инициализация уровня данными из tileData
+    // Инициализация уровня данными из tileData
     void init(std::vector<std::vector<unsigned int>> tileData, unsigned int levelWidth, unsigned int levelHeight);
 };
 

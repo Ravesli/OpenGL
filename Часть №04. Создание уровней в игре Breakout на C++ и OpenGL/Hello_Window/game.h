@@ -28,24 +28,27 @@ const float PLAYER_VELOCITY(500.0f);
 
 
 // Класс Game содержит все относящиеся к игре состояния и необходимый функционал.
-// Объединяет все данные, связанные с игрой, в один класс для
-// простого доступа к каждому из компонентов.
-
+// Объединяет все данные, связанные с игрой, в один класс для простого доступа к каждому из компонентов
 class Game
 {
 public:
-    // состояние игры
-    GameState               State;
-    bool                    Keys[1024];
-    unsigned int            Width, Height;
-    std::vector<GameLevel>  Levels;
-    unsigned int            Level;
-    // конструктор/деструктор
+    // Состояние игры
+    GameState State;
+    bool Keys[1024];
+    unsigned int Width, Height;
+    std::vector<GameLevel> Levels;
+    unsigned int Level;
+	
+    // Конструктор
     Game(unsigned int width, unsigned int height);
+	
+	// Деструктор
     ~Game();
-    // инициализация состояния игры (загрузка всех шейдеров/текстур/уровней)
+	
+    // Инициализация состояния игры (загрузка всех шейдеров/текстур/уровней)
     void Init();
-    // игровой цикл
+	
+    // Игровой цикл
     void ProcessInput(float dt);
     void Update(float dt);
     void Render();
