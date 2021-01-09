@@ -3,9 +3,9 @@ in vec2 TexCoords;
 out vec4 color;
 
 uniform sampler2D scene;
-uniform vec2  offsets[9];
-uniform int     edge_kernel[9];
-uniform float  blur_kernel[9];
+uniform vec2 offsets[9];
+uniform int edge_kernel[9];
+uniform float blur_kernel[9];
 
 uniform bool chaos;
 uniform bool confuse;
@@ -13,16 +13,17 @@ uniform bool shake;
 
 void main()
 {
-    // обнуление памяти, так как выходная переменная по умолчанию инициализируется неопределенными значениями
+    // Обнуление памяти, так как выходная переменная по умолчанию инициализируется неопределенными значениями
     color = vec4(0.0f);
 
     vec3 sample[9];
-    // выборка из текстуры смещений при использовании матрицы свёртки
+	
+    // Выборка из текстуры смещений при использовании матрицы свертки
     if(chaos || shake)
         for(int i = 0; i < 9; i++)
             sample[i] = vec3(texture(scene, TexCoords.st + offsets[i]));
 
-    // просчет эффектов
+    // Просчет эффектов
     if(chaos)
     {           
         for(int i = 0; i < 9; i++)

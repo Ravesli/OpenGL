@@ -17,22 +17,25 @@
 
 
 // Класс BallObject получен из класса GameObject.
-// Помимо необходимой информации о состоянии мяча в нём, в отличие 
-// от класса GameObject, присутствуют некоторые дополнительные функции.
+// Помимо необходимой информации о состоянии мяча в нем,
+// в отличие от класса GameObject, присутствуют некоторые дополнительные функции
 class BallObject : public GameObject
 {
 public:
-    // состояние мяча	
-    float   Radius;
-    bool    Stuck;
-    bool    Sticky, PassThrough;
-    // конструкторы
+    // Состояние мяча	
+    float Radius;
+    bool Stuck;
+    bool Sticky, PassThrough;
+	
+    // Конструкторы
     BallObject();
     BallObject(glm::vec2 pos, float radius, glm::vec2 velocity, Texture2D sprite);
-    // перемещает мячик, удерживая его в пределах границ окна (за исключением нижнего края); возвращает новую позицию
+	
+    // Перемещаем мяч, удерживая его в пределах границ окна (за исключением нижнего края); возвращаем новую позицию
     glm::vec2 Move(float dt, unsigned int window_width);
-    // возвращает мяч в исходное состояние с заданным положением и скоростью
-    void      Reset(glm::vec2 position, glm::vec2 velocity);
+	
+    // Возвращаем мяч в исходное состояние с заданным положением и скоростью
+    void Reset(glm::vec2 position, glm::vec2 velocity);
 };
 
 #endif

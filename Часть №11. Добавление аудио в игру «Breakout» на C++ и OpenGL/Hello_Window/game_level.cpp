@@ -14,9 +14,10 @@
 
 void GameLevel::Load(const char* file, unsigned int levelWidth, unsigned int levelHeight)
 {
-    // очистка старых данных
+    // Очистка старых данных
     this->Bricks.clear();
-    // загрузка из файла
+	
+    // Загрузка из файла
     unsigned int tileCode;
     GameLevel level;
     std::string line;
@@ -55,16 +56,17 @@ bool GameLevel::IsCompleted()
 
 void GameLevel::init(std::vector<std::vector<unsigned int>> tileData, unsigned int levelWidth, unsigned int levelHeight)
 {
-    // вычисляем размеры
+    // Вычисляем размеры
     unsigned int height = tileData.size();
     unsigned int width = tileData[0].size(); // обратите внимание, что мы можем индексировать вектор, начиная с 0, поскольку данная функция вызывается только в том случае, если height > 0
     float unit_width = levelWidth / static_cast<float>(width), unit_height = levelHeight / height;
-    // инициализация уровня данными из tileData		
+    
+	// Инициализация уровня данными из tileData		
     for (unsigned int y = 0; y < height; ++y)
     {
         for (unsigned int x = 0; x < width; ++x)
         {
-            // проверяем тип блока по информации об уровне (2D массив уровня)
+            // Проверяем тип блока по информации об уровне
             if (tileData[y][x] == 1) // твердый
             {
                 glm::vec2 pos(unit_width * x, unit_height * y);
@@ -73,9 +75,9 @@ void GameLevel::init(std::vector<std::vector<unsigned int>> tileData, unsigned i
                 obj.IsSolid = true;
                 this->Bricks.push_back(obj);
             }
-            else if (tileData[y][x] > 1)	// разрушаемый; теперь определяем его цвет
+            else if (tileData[y][x] > 1)	// разрушаемый
             {
-                glm::vec3 color = glm::vec3(1.0f); // исходный цвет: белый
+                glm::vec3 color = glm::vec3(1.0f); // исходный цвет - белый
                 if (tileData[y][x] == 2)
                     color = glm::vec3(0.2f, 0.6f, 1.0f);
                 else if (tileData[y][x] == 3)

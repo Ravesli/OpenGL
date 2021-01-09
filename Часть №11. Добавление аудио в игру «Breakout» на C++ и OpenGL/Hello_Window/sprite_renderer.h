@@ -22,15 +22,18 @@ class SpriteRenderer
 public:
     // Конструктор (инициализирует шейдеры/объекты)
     SpriteRenderer(const Shader& shader);
+	
     // Деструктор
     ~SpriteRenderer();
+	
     // Рендерим текстурированный прямоугольник по заданному спрайту
     void DrawSprite(const Texture2D& texture, glm::vec2 position, glm::vec2 size = glm::vec2(10.0f, 10.0f), float rotate = 0.0f, glm::vec3 color = glm::vec3(1.0f));
 private:
     // Состояние рендера
-    Shader       shader;
+    Shader shader;
     unsigned int quadVAO;
-    // Инициализирует и настраивает атрибуты буфера и атрибуты вершин
+	
+    // Инициализируем и настраиваем атрибуты буфера и атрибуты вершин
     void initRenderData();
 };
 

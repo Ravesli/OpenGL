@@ -15,8 +15,8 @@
 #include "stb_image.h"
 
 // Создание экземпляров статических переменных
-std::map<std::string, Texture2D>    ResourceManager::Textures;
-std::map<std::string, Shader>       ResourceManager::Shaders;
+std::map<std::string, Texture2D> ResourceManager::Textures;
+std::map<std::string, Shader> ResourceManager::Shaders;
 
 
 Shader ResourceManager::LoadShader(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile, std::string name)
@@ -53,26 +53,30 @@ void ResourceManager::Clear()
 
 Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *fShaderFile, const char *gShaderFile)
 {
-    // 1. получение исходного кода вершинного/фрагментного шейдера из переменной filePath
+    // 1. Получение исходного кода вершинного/фрагментного шейдера из переменной filePath
     std::string vertexCode;
     std::string fragmentCode;
     std::string geometryCode;
     try
     {
-        // открываем файлы
+        // Открываем файлы
         std::ifstream vertexShaderFile(vShaderFile);
         std::ifstream fragmentShaderFile(fShaderFile);
         std::stringstream vShaderStream, fShaderStream;
-        // считываем содержимое файлового буфера в соотв. потоки
+		
+        // Считываем содержимое файлового буфера в соответствующие потоки
         vShaderStream << vertexShaderFile.rdbuf();
         fShaderStream << fragmentShaderFile.rdbuf();
-        // закрываем файлы
+		
+        // Закрываем файлы
         vertexShaderFile.close();
         fragmentShaderFile.close();
-        // конвертируем поток в строку
+		
+        // Конвертируем поток в строку
         vertexCode = vShaderStream.str();
         fragmentCode = fShaderStream.str();
-        // если присутствует путь геометрического шейдера, также загружаем и его
+		
+        // Если присутствует путь геометрического шейдера, то также загружаем и его
         if (gShaderFile != nullptr)
         {
             std::ifstream geometryShaderFile(gShaderFile);
@@ -89,6 +93,7 @@ Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *
     const char *vShaderCode = vertexCode.c_str();
     const char *fShaderCode = fragmentCode.c_str();
     const char *gShaderCode = geometryCode.c_str();
+	
     // 2. Теперь создаем объект шейдера из исходного кода
     Shader shader;
     shader.Compile(vShaderCode, fShaderCode, gShaderFile != nullptr ? gShaderCode : nullptr);
@@ -97,19 +102,22 @@ Shader ResourceManager::loadShaderFromFile(const char *vShaderFile, const char *
 
 Texture2D ResourceManager::loadTextureFromFile(const char *file, bool alpha)
 {
-    // создаем объект текстуры
+    // Создаем объект текстуры
     Texture2D texture;
     if (alpha)
     {
         texture.Internal_Format = GL_RGBA;
         texture.Image_Format = GL_RGBA;
     }
-    // загружаем изображение
+	
+    // Загружаем изображение
     int width, height, nrChannels;
     unsigned char* data = stbi_load(file, &width, &height, &nrChannels, 0);
-    // теперь генерируем текстуру
+	
+    // Теперь генерируем текстуру
     texture.Generate(width, height, data);
-    // и в конце освобождаем ресурсы
+	
+    // И в конце освобождаем ресурсы
     stbi_image_free(data);
     return texture;
 }
