@@ -16,13 +16,14 @@ ParticleGenerator::ParticleGenerator(Shader shader, Texture2D texture, unsigned 
 
 void ParticleGenerator::Update(float dt, GameObject& object, unsigned int newParticles, glm::vec2 offset)
 {
-    // добавляем новые частицы
+    // Добавляем новые частицы
     for (unsigned int i = 0; i < newParticles; ++i)
     {
         int unusedParticle = this->firstUnusedParticle();
         this->respawnParticle(this->particles[unusedParticle], object, offset);
     }
-    // обновляем все частицы
+    
+	// Обновляем все частицы
     for (unsigned int i = 0; i < this->amount; ++i)
     {
         Particle& p = this->particles[i];
@@ -35,10 +36,10 @@ void ParticleGenerator::Update(float dt, GameObject& object, unsigned int newPar
     }
 }
 
-// рендеринг всех частиц
+// Рендеринг всех частиц
 void ParticleGenerator::Draw()
 {
-    // используем аддитивный режим смешивания для придания эффекта свечения
+    // Используем аддитивный режим смешивания для придания эффекта свечения
     glBlendFunc(GL_SRC_ALPHA, GL_ONE);
     this->shader.Use();
     for (Particle particle : this->particles)
@@ -53,13 +54,14 @@ void ParticleGenerator::Draw()
             glBindVertexArray(0);
         }
     }
-    // не забываем сбросить режим смешивания к изначальным настройкам
+	
+    // Не забываем сбросить режим смешивания к изначальным настройкам
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void ParticleGenerator::init()
 {
-    // настройка свойств меша и атрибутов
+    // Настройка свойств меша и атрибутов
     unsigned int VBO;
     float particle_quad[] = {
         0.0f, 1.0f, 0.0f, 1.0f,
@@ -73,38 +75,42 @@ void ParticleGenerator::init()
     glGenVertexArrays(1, &this->VAO);
     glGenBuffers(1, &VBO);
     glBindVertexArray(this->VAO);
-    // заполнение буфера меша
+	
+    // Заполнение буфера меша
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(particle_quad), particle_quad, GL_STATIC_DRAW);
-    // настройка атрибутов меша
+    
+	// Настройка атрибутов меша
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
     glBindVertexArray(0);
 
-    // по умолчанию создаем частицы в количестве "this->amount" штук
+    // По умолчанию создаем частицы в количестве "this->amount" штук
     for (unsigned int i = 0; i < this->amount; ++i)
         this->particles.push_back(Particle());
 }
 
-// сохраняем индекс последней использованной частицы (для быстрого доступа к следующей использованной частицы)
+// Сохраняем индекс последней использованной частицы (для быстрого доступа к следующей использованной частицы)
 unsigned int lastUsedParticle = 0;
 unsigned int ParticleGenerator::firstUnusedParticle()
 {
-    // сначала проводим поиск, начиная с последней использованной частицы (как правило, результат возвращается почти мгновенно)
+    // Сначала проводим поиск, начиная с последней использованной частицы (как правило, результат возвращается почти мгновенно)
     for (unsigned int i = lastUsedParticle; i < this->amount; ++i) {
         if (this->particles[i].Life <= 0.0f) {
             lastUsedParticle = i;
             return i;
         }
     }
-    // в противном случае выполняем линейный поиск
+	
+    // В противном случае, выполняем линейный поиск
     for (unsigned int i = 0; i < lastUsedParticle; ++i) {
         if (this->particles[i].Life <= 0.0f) {
             lastUsedParticle = i;
             return i;
         }
     }
-    // все частицы еще живые, тогда перезаписываем первую (обратите внимание, что если программа
+	
+    // Все частицы еще живые, поэтому перезаписываем первую (обратите внимание, что если программа
     // неоднократно попадает в данный вариант событий, то следует зарезервировать больше частиц)
     lastUsedParticle = 0;
     return 0;

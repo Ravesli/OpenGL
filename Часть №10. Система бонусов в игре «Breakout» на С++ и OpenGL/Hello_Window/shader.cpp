@@ -19,17 +19,20 @@ Shader &Shader::Use()
 void Shader::Compile(const char* vertexSource, const char* fragmentSource, const char* geometrySource)
 {
     unsigned int sVertex, sFragment, gShader;
-    // вершинный шейдер
+	
+    // Вершинный шейдер
     sVertex = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(sVertex, 1, &vertexSource, NULL);
     glCompileShader(sVertex);
     checkCompileErrors(sVertex, "VERTEX");
-    // фрагментный шейдер
+	
+    // Фрагментный шейдер
     sFragment = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(sFragment, 1, &fragmentSource, NULL);
     glCompileShader(sFragment);
     checkCompileErrors(sFragment, "FRAGMENT");
-    // если задан исходный код геометрического шейдера, также компилируем и его
+	
+    // Если задан исходный код геометрического шейдера, также компилируем и его
     if (geometrySource != nullptr)
     {
         gShader = glCreateShader(GL_GEOMETRY_SHADER);
@@ -37,7 +40,8 @@ void Shader::Compile(const char* vertexSource, const char* fragmentSource, const
         glCompileShader(gShader);
         checkCompileErrors(gShader, "GEOMETRY");
     }
-    // шейдерная программа
+	
+    // Шейдерная программа
     this->ID = glCreateProgram();
     glAttachShader(this->ID, sVertex);
     glAttachShader(this->ID, sFragment);
@@ -45,7 +49,8 @@ void Shader::Compile(const char* vertexSource, const char* fragmentSource, const
         glAttachShader(this->ID, gShader);
     glLinkProgram(this->ID);
     checkCompileErrors(this->ID, "PROGRAM");
-    // удаляем шейдеры, так как теперь они связаны с нашей программой и больше не нужны
+	
+    // Удаляем шейдеры, так как теперь они связаны с нашей программой и больше не нужны
     glDeleteShader(sVertex);
     glDeleteShader(sFragment);
     if (geometrySource != nullptr)
