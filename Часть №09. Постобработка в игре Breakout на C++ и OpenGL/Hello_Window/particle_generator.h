@@ -22,37 +22,42 @@
 struct Particle {
     glm::vec2 Position, Velocity;
     glm::vec4 Color;
-    float     Life;
+    float Life;
 
     Particle() : Position(0.0f), Velocity(0.0f), Color(1.0f), Life(0.0f) { }
 };
 
 
-// Класс ParticleGenerator действует как контейнер для рендеринга большого 
-// количества частиц, многократно порождая и обновляя частицы и убивая  
-// их через заданный промежуток времени.
+// Класс ParticleGenerator действует как контейнер для рендеринга большого количества частиц, 
+// многократно порождая и обновляя частицы и убивая их через заданный промежуток времени
 class ParticleGenerator
 {
 public:
-    // конструктор
+    // Конструктор
     ParticleGenerator(Shader shader, Texture2D texture, unsigned int amount);
-    // обновляем все частицы
+	
+    // Обновляем все частицы
     void Update(float dt, GameObject& object, unsigned int newParticles, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
-    // рендерим все частицы
+	
+    // Рендерим все частицы
     void Draw();
 private:
-    // состояние
+    // Состояние
     std::vector<Particle> particles;
     unsigned int amount;
-    // рендеринг
+	
+    // Рендеринг
     Shader shader;
     Texture2D texture;
     unsigned int VAO;
-    // инициализация буферов и вершинных атрибутов
+	
+    // Инициализация буферов и вершинных атрибутов
     void init();
-    // возвращает индекс первой неизадействованной в данный момент частицы (при Life <= 0.0f) или 0, если таких частиц в данный момент нет
+	
+    // Возвращаем индекс первой незадействованной в данный момент частицы (при Life <= 0.0f) или 0, если таких частиц в данный момент нет
     unsigned int firstUnusedParticle();
-    // возрождение частиц
+    
+	// Возрождение частиц
     void respawnParticle(Particle& particle, GameObject& object, glm::vec2 offset = glm::vec2(0.0f, 0.0f));
 };
 

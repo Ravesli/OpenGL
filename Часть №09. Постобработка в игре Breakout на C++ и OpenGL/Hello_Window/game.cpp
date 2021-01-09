@@ -40,29 +40,33 @@ Game::~Game()
 
 void Game::Init()
 {
-    // загрузка шейдеров
+    // Загрузка шейдеров
     ResourceManager::LoadShader("../shaders/sprite.vs", "../shaders/sprite.frag", nullptr, "sprite");
     ResourceManager::LoadShader("../shaders/particle.vs", "../shaders/particle.frag", nullptr, "particle");
     ResourceManager::LoadShader("../shaders/post_processing.vs", "../shaders/post_processing.frag", nullptr, "postprocessing");
-    // конфигурирование шейдеров
+    
+	// Конфигурирование шейдеров
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width),
         static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
     ResourceManager::GetShader("sprite").Use().SetInteger("image", 0);
     ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
     ResourceManager::GetShader("particle").Use().SetInteger("sprite", 0);
     ResourceManager::GetShader("particle").SetMatrix4("projection", projection);
-    // загрузка текстур
+    
+	// Загрузка текстур
     ResourceManager::LoadTexture("../textures/background.jpg", false, "background");
     ResourceManager::LoadTexture("../textures/awesomeface.png", true, "face");
     ResourceManager::LoadTexture("../textures/block.png", false, "block");
     ResourceManager::LoadTexture("../textures/block_solid.png", false, "block_solid");
     ResourceManager::LoadTexture("../textures/paddle.png", true, "paddle");
     ResourceManager::LoadTexture("../textures/particle.png", true, "particle");
-    // установка специфичных для рендеринга элементов управления
+	
+    // Установка специфичных для рендеринга элементов управления
     Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
     Particles = new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("particle"), 500);
     Effects = new PostProcessor(ResourceManager::GetShader("postprocessing"), this->Width, this->Height);
-    // загрузка уровней
+    
+	// Загрузка уровней
     GameLevel one; one.Load("../levels/one.lvl", this->Width, this->Height / 2);
     GameLevel two; two.Load("../levels/two.lvl", this->Width, this->Height / 2);
     GameLevel three; three.Load("../levels/three.lvl", this->Width, this->Height / 2);
@@ -72,7 +76,8 @@ void Game::Init()
     this->Levels.push_back(three);
     this->Levels.push_back(four);
     this->Level = 0;
-    // конфигурирование игровых объектов
+	
+    // Конфигурирование игровых объектов
     glm::vec2 playerPos = glm::vec2(this->Width / 2.0f - PLAYER_SIZE.x / 2.0f, this->Height - PLAYER_SIZE.y);
     Player = new GameObject(playerPos, PLAYER_SIZE, ResourceManager::GetTexture("paddle"));
     glm::vec2 ballPos = playerPos + glm::vec2(PLAYER_SIZE.x / 2.0f - BALL_RADIUS, -BALL_RADIUS * 2.0f);
@@ -81,20 +86,24 @@ void Game::Init()
 
 void Game::Update(float dt)
 {
-    // обновление объектов
+    // Обновление объектов
     Ball->Move(dt, this->Width);
-    // проверка столкновения
+	
+    // Проверка столкновения
     this->DoCollisions();
-    // обновление частиц
+	
+    // Обновление частиц
     Particles->Update(dt, *Ball, 2, glm::vec2(Ball->Radius / 2.0f));
-    // уменьшение времени тряски
+	
+    // Уменьшение времени тряски
     if (ShakeTime > 0.0f)
     {
         ShakeTime -= dt;
         if (ShakeTime <= 0.0f)
             Effects->Shake = false;
     }
-    // проверка условия сброса состояния игры
+	
+    // Проверка условия сброса состояния игры
     if (Ball->Position.y >= this->Height) // достиг ли мяч нижней границы окна?
     {
         this->ResetLevel();
@@ -107,7 +116,8 @@ void Game::ProcessInput(float dt)
     if (this->State == GAME_ACTIVE)
     {
         float velocity = PLAYER_VELOCITY * dt;
-        // перемещаем ракетку
+        
+		// Перемещаем ракетку
         if (this->Keys[GLFW_KEY_A])
         {
             if (Player->Position.x >= 0.0f)
@@ -135,21 +145,28 @@ void Game::Render()
 {
     if (this->State == GAME_ACTIVE)
     {
-        // начало рендеринга в постпроцессинг-фреймбуфер
+        // Начало рендеринга в постпроцессинг-фреймбуфер
         Effects->BeginRender();
-        // отрисовка фона
+		
+        // Отрисовка фона
         Renderer->DrawSprite(ResourceManager::GetTexture("background"), glm::vec2(0.0f, 0.0f), glm::vec2(this->Width, this->Height), 0.0f);
-        // отрисовка уровня
+        
+		// Отрисовка уровня
         this->Levels[this->Level].Draw(*Renderer);
-        // отрисовка ракетки
+		
+        // Отрисовка ракетки
         Player->Draw(*Renderer);
-        // отрисовка частиц	
+		
+        // Отрисовка частиц	
         Particles->Draw();
-        // отрисовка мяча
+		
+        // Отрисовка мяча
         Ball->Draw(*Renderer);
-        // завершение рендеринга в постпроцессинг-фреймбуфер
+		
+        // Завершение рендеринга в постпроцессинг-фреймбуфер
         Effects->EndRender();
-        // рендеринг постпроцессинг-прямоугольника
+		
+        // Рендеринг постпроцессинг-прямоугольника
         Effects->Render(glfwGetTime());
     }
 }
@@ -169,7 +186,7 @@ void Game::ResetLevel()
 
 void Game::ResetPlayer()
 {
-    // сброс состояния уровня/ракетки
+    // Сброс состояния уровня/ракетки
     Player->Size = PLAYER_SIZE;
     Player->Position = glm::vec2(this->Width / 2.0f - PLAYER_SIZE.x / 2.0f, this->Height - PLAYER_SIZE.y);
     Ball->Reset(Player->Position + glm::vec2(PLAYER_SIZE.x / 2.0f - BALL_RADIUS, -(BALL_RADIUS * 2.0f)), INITIAL_BALL_VELOCITY);
@@ -189,21 +206,23 @@ void Game::DoCollisions()
             Collision collision = CheckCollision(*Ball, box);
             if (std::get<0>(collision)) // если произошло столкновение
             {
-                // разрушаем кирпич (если он не твёрдый)
+                // Разрушаем кирпич (если он не твердый)
                 if (!box.IsSolid)
                     box.Destroyed = true;
                 else
-                {   // если же кирпич - твёрдый, то активируем эффект тряски
+                {   // если же кирпич - твердый, то активируем эффект тряски
                     ShakeTime = 0.05f;
                     Effects->Shake = true;
                 }
-                // обработка столкновения
+				
+                // Обработка столкновения
                 Direction dir = std::get<1>(collision);
                 glm::vec2 diff_vector = std::get<2>(collision);
                 if (dir == LEFT || dir == RIGHT) // горизонтальное столкновение
                 {
                     Ball->Velocity.x = -Ball->Velocity.x; // обращаем горизонтальную скорость
-                    // перемещение
+                    
+					// Перемещение
                     float penetration = Ball->Radius - std::abs(diff_vector.x);
                     if (dir == LEFT)
                         Ball->Position.x += penetration; // двигаем мяч обратно вправо
@@ -213,7 +232,8 @@ void Game::DoCollisions()
                 else // вертикальное столкновение
                 {
                     Ball->Velocity.y = -Ball->Velocity.y; // обращаем вертикальную скорость
-                    // перемещение
+                    
+					// Перемещение
                     float penetration = Ball->Radius - std::abs(diff_vector.y);
                     if (dir == UP)
                         Ball->Position.y -= penetration; // двигаем мяч обратно вверх
@@ -223,50 +243,59 @@ void Game::DoCollisions()
             }
         }
     }
-    // проверка столкновений для ракетки игрока (если мяч не зафиксирован на ней)
+	
+    // Проверка столкновений для ракетки игрока (если мяч не зафиксирован на ней)
     Collision result = CheckCollision(*Ball, *Player);
     if (!Ball->Stuck && std::get<0>(result))
     {
-        // смотрим, в каком месте мяч ударился о ракетку, и в зависимости от этого изменяем скорость
+        // Смотрим, в каком месте мяч ударился о ракетку, и в зависимости от этого изменяем скорость
         float centerBoard = Player->Position.x + Player->Size.x / 2.0f;
         float distance = (Ball->Position.x + Ball->Radius) - centerBoard;
         float percentage = distance / (Player->Size.x / 2.0f);
-        // и соответствующим образом передвигаем
+        
+		// И соответствующим образом передвигаем
         float strength = 2.0f;
         glm::vec2 oldVelocity = Ball->Velocity;
         Ball->Velocity.x = INITIAL_BALL_VELOCITY.x * percentage * strength;
-        //Ball->Velocity.y = -Ball->Velocity.y;
+        // Ball->Velocity.y = -Ball->Velocity.y;
         Ball->Velocity = glm::normalize(Ball->Velocity) * glm::length(oldVelocity); // сумма проекций вектора скорости на соответствующие оси должна быть постоянной (умножаем на величину старой скорости, чтобы итоговая скорость не менялась)
-        // фикс проблемы "липкой ракетки"
+		
+        // Решение проблемы "липкой ракетки"
         Ball->Velocity.y = -1.0f * abs(Ball->Velocity.y);
     }
 }
 
-bool CheckCollision(GameObject& one, GameObject& two) // Столкновение вида AABB - AABB
+bool CheckCollision(GameObject& one, GameObject& two) // столкновение вида AABB-AABB
 {
-    // перекрытие по оси x?
+    // Перекрытие по оси x?
     bool collisionX = one.Position.x + one.Size.x >= two.Position.x &&
         two.Position.x + two.Size.x >= one.Position.x;
-    // перекрытие по оси y?
+		
+    // Перекрытие по оси y?
     bool collisionY = one.Position.y + one.Size.y >= two.Position.y &&
         two.Position.y + two.Size.y >= one.Position.y;
-    // если перекрытия происходят относительно обеих осей, то мы имеем столкновение
+		
+    // Если перекрытия происходят относительно обеих осей, то мы имеем столкновение
     return collisionX && collisionY;
 }
 
-Collision CheckCollision(BallObject& one, GameObject& two) // Столкновение вида AABB - Окружность
+Collision CheckCollision(BallObject& one, GameObject& two) // столкновение вида AABB-Окружность
 {
-    // сначала вычисляем точку центра окружности 
+    // Сначала вычисляем точку центра окружности 
     glm::vec2 center(one.Position + one.Radius);
-    // вычисляем информацию по AABB(координаты центра, и половинки длин сторон)
+	
+    // Вычисляем информацию по AABB (координаты центра, и половинки длин сторон)
     glm::vec2 aabb_half_extents(two.Size.x / 2.0f, two.Size.y / 2.0f);
     glm::vec2 aabb_center(two.Position.x + aabb_half_extents.x, two.Position.y + aabb_half_extents.y);
-    // получаем вектор разности между центром окружности и центром AABB
+	
+    // Получаем вектор разности между центром окружности и центром AABB
     glm::vec2 difference = center - aabb_center;
     glm::vec2 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
-    // добавляя переменную clamped к AABB_center мы получим ближайшую к окружности точку, лежащую на стороне AABB
+	
+    // Добавляя переменную clamped к AABB_center мы получим ближайшую к окружности точку, лежащую на стороне AABB
     glm::vec2 closest = aabb_center + clamped;
-    // получаем вектор между центром окружности и ближайшей к ней точкой AABB, проверяем чтобы длина этого вектора была меньше радиуса окружности 
+	
+    // Получаем вектор между центром окружности и ближайшей к ней точкой AABB, проверяем чтобы длина этого вектора была меньше радиуса окружности 
     difference = closest - center;
 
     if (glm::length(difference) < one.Radius) // именно "<", а не "<=", т.к. в противном случае в конце стандии обработки столкновения (когда объекты касаются друг друга) произойдет повторное столкновение
@@ -275,14 +304,14 @@ Collision CheckCollision(BallObject& one, GameObject& two) // Столкнове
         return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
 }
 
-// вычисляем в каком направлении смотрит вектор (С,В,Ю или З)
+// Вычисляем в каком направлении смотрит вектор 
 Direction VectorDirection(glm::vec2 target)
 {
     glm::vec2 compass[] = {
-        glm::vec2(0.0f, 1.0f),	// Вверх
-        glm::vec2(1.0f, 0.0f),	// Вправо
-        glm::vec2(0.0f, -1.0f),	// Вниз
-        glm::vec2(-1.0f, 0.0f)	// Влево
+        glm::vec2(0.0f, 1.0f),	// вверх
+        glm::vec2(1.0f, 0.0f),	// вправо
+        glm::vec2(0.0f, -1.0f),	// вниз
+        glm::vec2(-1.0f, 0.0f)	// влево
     };
     float max = 0.0f;
     unsigned int best_match = -1;

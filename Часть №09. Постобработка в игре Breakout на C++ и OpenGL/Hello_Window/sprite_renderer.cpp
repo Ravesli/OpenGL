@@ -22,20 +22,20 @@ SpriteRenderer::~SpriteRenderer()
 
 void SpriteRenderer::DrawSprite(const Texture2D& texture, glm::vec2 position, glm::vec2 size, float rotate, glm::vec3 color)
 {
-    // подготовка преобразований
+    // Подготовка преобразований
     this->shader.Use();
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(position, 0.0f));  // сначала – перемещаем (преобразования таковы: первым происходит масштабирование, затем поворот, а в конце - перенос; обратный порядок)
+    model = glm::translate(model, glm::vec3(position, 0.0f)); // сначала перемещаем (преобразования таковы: первым происходит масштабирование, затем поворот, а в конце перенос; обратный порядок)
 
     model = glm::translate(model, glm::vec3(0.5f * size.x, 0.5f * size.y, 0.0f)); // перемещаем точку начала поворота в центр прямоугольника
     model = glm::rotate(model, glm::radians(rotate), glm::vec3(0.0f, 0.0f, 1.0f)); // затем производим поворот
     model = glm::translate(model, glm::vec3(-0.5f * size.x, -0.5f * size.y, 0.0f)); // возвращаем точку поворота в исходную позицию
 
-    model = glm::scale(model, glm::vec3(size, 1.0f)); // последним идет - масштабирование
+    model = glm::scale(model, glm::vec3(size, 1.0f)); // последним идет масштабирование
 
     this->shader.SetMatrix4("model", model);
 
-    // рендерим текстурированный прямоугольник
+    // Рендерим текстурированный прямоугольник
     this->shader.SetVector3f("spriteColor", color);
 
     glActiveTexture(GL_TEXTURE0);
@@ -48,10 +48,9 @@ void SpriteRenderer::DrawSprite(const Texture2D& texture, glm::vec2 position, gl
 
 void SpriteRenderer::initRenderData()
 {
-    // конфигурирование VAO/VBO
+    // Конфигурирование VAO/VBO
     unsigned int VBO;
     float vertices[] = {
-        // pos      // tex
         0.0f, 1.0f, 0.0f, 1.0f,
         1.0f, 0.0f, 1.0f, 0.0f,
         0.0f, 0.0f, 0.0f, 0.0f,
