@@ -24,32 +24,38 @@ enum GameState {
 
 // Начальный размер ракетки игрока
 const glm::vec2 PLAYER_SIZE(100.0f, 20.0f);
+
 // Начальная скорость перемещения ракетки игрока
 const float PLAYER_VELOCITY(500.0f);
+
 // Начальная скорость мяча
 const glm::vec2 INITIAL_BALL_VELOCITY(100.0f, -350.0f);
+
 // Радиус мяча
 const float BALL_RADIUS = 12.5f;
 
 // Класс Game содержит все относящиеся к игре состояния и необходимый функционал.
-// Объединяет все данные, связанные с игрой, в один класс для
-// простого доступа к каждому из компонентов.
-
+// Объединяет все данные, связанные с игрой, в один класс для простого доступа к каждому из компонентов
 class Game
 {
 public:
-    // состояние игры
-    GameState               State;
-    bool                    Keys[1024];
-    unsigned int            Width, Height;
-    std::vector<GameLevel>  Levels;
-    unsigned int            Level;
-    // конструктор/деструктор
+    // Состояние игры
+    GameState State;
+    bool Keys[1024];
+    unsigned int Width, Height;
+    std::vector<GameLevel> Levels;
+    unsigned int Level;
+	
+    // Конструктор
     Game(unsigned int width, unsigned int height);
+	
+	// Деструктор
     ~Game();
-    // инициализация состояния игры (загрузка всех шейдеров/текстур/уровней)
+	
+    // Инициализация состояния игры (загрузка всех шейдеров/текстур/уровней)
     void Init();
-    // игровой цикл
+	
+    // Игровой цикл
     void ProcessInput(float dt);
     void Update(float dt);
     void Render();
