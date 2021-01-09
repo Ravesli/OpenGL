@@ -52,18 +52,20 @@ Game::~Game()
 
 void Game::Init()
 {
-    // загрузка шейдеров
+    // Загрузка шейдеров
     ResourceManager::LoadShader("../shaders/sprite.vs", "../shaders/sprite.frag", nullptr, "sprite");
     ResourceManager::LoadShader("../shaders/particle.vs", "../shaders/particle.frag", nullptr, "particle");
     ResourceManager::LoadShader("../shaders/post_processing.vs", "../shaders/post_processing.frag", nullptr, "postprocessing");
-    // конфигурирование шейдеров
+    
+	// Конфигурирование шейдеров
     glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(this->Width),
         static_cast<float>(this->Height), 0.0f, -1.0f, 1.0f);
     ResourceManager::GetShader("sprite").Use().SetInteger("image", 0);
     ResourceManager::GetShader("sprite").SetMatrix4("projection", projection);
     ResourceManager::GetShader("particle").Use().SetInteger("sprite", 0);
     ResourceManager::GetShader("particle").SetMatrix4("projection", projection);
-    // загрузка текстур
+    
+	// Загрузка текстур
     ResourceManager::LoadTexture("../textures/background.jpg", false, "background");
     ResourceManager::LoadTexture("../textures/awesomeface.png", true, "face");
     ResourceManager::LoadTexture("../textures/block.png", false, "block");
@@ -76,13 +78,15 @@ void Game::Init()
     ResourceManager::LoadTexture("../textures/powerup_confuse.png", true, "powerup_confuse");
     ResourceManager::LoadTexture("../textures/powerup_chaos.png", true, "powerup_chaos");
     ResourceManager::LoadTexture("../textures/powerup_passthrough.png", true, "powerup_passthrough");
-    // установка специфичных для рендеринга элементов управления
+	
+    // Установка специфичных для рендеринга элементов управления
     Renderer = new SpriteRenderer(ResourceManager::GetShader("sprite"));
     Particles = new ParticleGenerator(ResourceManager::GetShader("particle"), ResourceManager::GetTexture("particle"), 500);
     Effects = new PostProcessor(ResourceManager::GetShader("postprocessing"), this->Width, this->Height);
     Text = new TextRenderer(this->Width, this->Height);
     Text->Load("../fonts/OCRAEXT.TTF", 24);    
-    // загрузка уровней
+    
+	// Загрузка уровней
     GameLevel one; one.Load("../levels/one.lvl", this->Width, this->Height / 2);
     GameLevel two; two.Load("../levels/two.lvl", this->Width, this->Height / 2);
     GameLevel three; three.Load("../levels/three.lvl", this->Width, this->Height / 2);
@@ -92,37 +96,45 @@ void Game::Init()
     this->Levels.push_back(three);
     this->Levels.push_back(four);
     this->Level = 0;
-    // конфигурирование игровых объектов
+	
+    // Конфигурирование игровых объектов
     glm::vec2 playerPos = glm::vec2(this->Width / 2.0f - PLAYER_SIZE.x / 2.0f, this->Height - PLAYER_SIZE.y);
     Player = new GameObject(playerPos, PLAYER_SIZE, ResourceManager::GetTexture("paddle"));
     glm::vec2 ballPos = playerPos + glm::vec2(PLAYER_SIZE.x / 2.0f - BALL_RADIUS, -BALL_RADIUS * 2.0f);
     Ball = new BallObject(ballPos, BALL_RADIUS, INITIAL_BALL_VELOCITY, ResourceManager::GetTexture("face"));
-    // аудио
+    
+	// Аудио
     SoundEngine->play2D("../audio/breakout.mp3", true);
 }
 
 void Game::Update(float dt)
 {
-    // обновление объектов
+    // Обновление объектов
     Ball->Move(dt, this->Width);
-    // проверка столкновения
+	
+    // Проверка столкновения
     this->DoCollisions();
-    // обновление частиц
+	
+    // Обновление частиц
     Particles->Update(dt, *Ball, 2, glm::vec2(Ball->Radius / 2.0f));
-    // обновление бонусов
+    
+	// Обновление бонусов
     this->UpdatePowerUps(dt);
-    // уменьшение времени тряски
+	
+    // Уменьшение времени тряски
     if (ShakeTime > 0.0f)
     {
         ShakeTime -= dt;
         if (ShakeTime <= 0.0f)
             Effects->Shake = false;
     }
-    // проверка условия сброса состояния игры
+	
+    // Проверка условия сброса состояния игры
     if (Ball->Position.y >= this->Height) // достиг ли мяч нижней границы окна?
     {
         --this->Lives;
-        // у игрока закончились все жизни?  : game over
+		
+        // У игрока закончились все жизни? : game over
         if (this->Lives == 0)
         {
             this->ResetLevel();
@@ -130,7 +142,8 @@ void Game::Update(float dt)
         }
         this->ResetPlayer();
     }
-    // проверка условия выигрыша
+    
+	// Проверка условия выигрыша
     if (this->State == GAME_ACTIVE && this->Levels[this->Level].IsCompleted())
     {
         this->ResetLevel();
@@ -161,7 +174,7 @@ void Game::ProcessInput(float dt)
                 this->Level--;
             else
                 this->Level = 3;
-            //this->Level = (this->Level - 1) % 4;
+            // this->Level = (this->Level - 1) % 4;
             this->KeysProcessed[GLFW_KEY_S] = true;
         }
     }
@@ -177,7 +190,8 @@ void Game::ProcessInput(float dt)
     if (this->State == GAME_ACTIVE)
     {
         float velocity = PLAYER_VELOCITY * dt;
-        // перемещение ракетки
+        
+		// Перемещение ракетки
         if (this->Keys[GLFW_KEY_A])
         {
             if (Player->Position.x >= 0.0f)
@@ -205,27 +219,36 @@ void Game::Render()
 {
     if (this->State == GAME_ACTIVE || this->State == GAME_MENU || this->State == GAME_WIN)
     {
-        // начало рендеринга в постпроцессинг-фреймбуфер
+        // Начало рендеринга в постпроцессинг-фреймбуфер
         Effects->BeginRender();
-        // отрисовка фона
+		
+        // Отрисовка фона
         Renderer->DrawSprite(ResourceManager::GetTexture("background"), glm::vec2(0.0f, 0.0f), glm::vec2(this->Width, this->Height), 0.0f);
-        // отрисовка уровня
+        
+		// Отрисовка уровня
         this->Levels[this->Level].Draw(*Renderer);
-        // отрисовка ракетки
+        
+		// Отрисовка ракетки
         Player->Draw(*Renderer);
-        // отрисовка бонусов
+		
+        // Отрисовка бонусов
         for (PowerUp& powerUp : this->PowerUps)
             if (!powerUp.Destroyed)
                 powerUp.Draw(*Renderer);
-        // отрисовка частиц	
+			
+        // Отрисовка частиц	
         Particles->Draw();
-        // отрисовка мяча
+		
+        // Отрисовка мяча
         Ball->Draw(*Renderer);
-        // завершение рендеринга в постпроцессинг-фреймбуфер
+		
+        // Завершение рендеринга в постпроцессинг-фреймбуфер
         Effects->EndRender();
-        // рендеринг постпроцессинг-прямоугольника
+		
+        // Рендеринг постпроцессинг-прямоугольника
         Effects->Render(glfwGetTime());
-        // рендеринг текста (без постпроцессинга)
+		
+        // Рендеринг текста (без постпроцессинга)
         std::stringstream ss; ss << this->Lives;
         Text->RenderText("Lives:" + ss.str(), 5.0f, 5.0f, 1.0f);
     }
@@ -258,18 +281,19 @@ void Game::ResetLevel()
 
 void Game::ResetPlayer()
 {
-    // сброс состояния уровня/ракетки
+    // Сброс состояния уровня/ракетки
     Player->Size = PLAYER_SIZE;
     Player->Position = glm::vec2(this->Width / 2.0f - PLAYER_SIZE.x / 2.0f, this->Height - PLAYER_SIZE.y);
     Ball->Reset(Player->Position + glm::vec2(PLAYER_SIZE.x / 2.0f - BALL_RADIUS, -(BALL_RADIUS * 2.0f)), INITIAL_BALL_VELOCITY);
-    // также отключаем все активированные бонусы
+    
+	// Также отключаем все активированные бонусы
     Effects->Chaos = Effects->Confuse = false;
     Ball->PassThrough = Ball->Sticky = false;
     Player->Color = glm::vec3(1.0f);
     Ball->Color = glm::vec3(1.0f);
 }
 
-// бонусы
+// Бонусы
 bool IsOtherPowerUpActive(std::vector<PowerUp>& powerUps, std::string type);
 
 void Game::UpdatePowerUps(float dt)
@@ -283,13 +307,14 @@ void Game::UpdatePowerUps(float dt)
 
             if (powerUp.Duration <= 0.0f)
             {
-                // убираем бонус из списка (в дальнейшем он будет удален)
+                // Убираем бонус из списка (в дальнейшем он будет удален)
                 powerUp.Activated = false;
-                // деактивируем эффекты
+				
+                // Деактивируем эффекты
                 if (powerUp.Type == "sticky")
                 {
                     if (!IsOtherPowerUpActive(this->PowerUps, "sticky"))
-                    {	// сбрасываем только в том случае, если больше никакх других бонусов типа “sticky” не активировано
+                    {	// сбрасываем только в том случае, если больше никаких других эффектов типа "Sticky" не активировано
                         Ball->Sticky = false;
                         Player->Color = glm::vec3(1.0f);
                     }
@@ -297,7 +322,7 @@ void Game::UpdatePowerUps(float dt)
                 else if (powerUp.Type == "pass-through")
                 {
                     if (!IsOtherPowerUpActive(this->PowerUps, "pass-through"))
-                    {	// сбрасываем только в том случае, если больше никакх других бонусов типа "pass-through" не активировано
+                    {	// сбрасываем только в том случае, если больше никаких других эффектов типа "Pass-Through" не активировано
                         Ball->PassThrough = false;
                         Ball->Color = glm::vec3(1.0f);
                     }
@@ -305,21 +330,22 @@ void Game::UpdatePowerUps(float dt)
                 else if (powerUp.Type == "confuse")
                 {
                     if (!IsOtherPowerUpActive(this->PowerUps, "confuse"))
-                    {	// сбрасываем только в том случае, если больше никакх других бонусов типа "confuse" не активировано
+                    {	// сбрасываем только в том случае, если больше никаких других эффектов типа "Confuse" не активировано
                         Effects->Confuse = false;
                     }
                 }
                 else if (powerUp.Type == "chaos")
                 {
                     if (!IsOtherPowerUpActive(this->PowerUps, "chaos"))
-                    {	// сбрасываем только в том случае, если больше никакх других бонусов типа "chaos" не активировано
+                    {	// сбрасываем только в том случае, если больше никаких других эффектов типа "Chaos" не активировано
                         Effects->Chaos = false;
                     }
                 }
             }
         }
     }
-    // Убираем из вектора все бонусы, которые уничтожены И неактивированы (пропавшие с экрана или бонусы, действие которых закончилось)
+	
+    // Убираем из вектора все бонусы, которые уничтожены И неактивированы (пропавшие с экрана или бонусы, действие которых закончилось).
     // Заметьте, для удаления каждого бонуса, который уже уничтожен или неактивирован, мы используем лямбда-выражение
     this->PowerUps.erase(std::remove_if(this->PowerUps.begin(), this->PowerUps.end(),
         [](const PowerUp& powerUp) { return powerUp.Destroyed && !powerUp.Activated; }
@@ -370,7 +396,7 @@ void ActivatePowerUp(PowerUp& powerUp)
     else if (powerUp.Type == "confuse")
     {
         if (!Effects->Chaos)
-            Effects->Confuse = true; // активируется при условии, что в данный момент не был активирован эффект “хаоса”
+            Effects->Confuse = true; // активируется при условии, что в данный момент не был активирован эффект "Хаоса"
     }
     else if (powerUp.Type == "chaos")
     {
@@ -381,8 +407,6 @@ void ActivatePowerUp(PowerUp& powerUp)
 
 bool IsOtherPowerUpActive(std::vector<PowerUp>& powerUps, std::string type)
 {
-    // Проверяем, что у нас нескольких все ещё активных бонусов одного типа,
-    // в противном случае мы не будем отключать эффект бонуса (пока не будем)
     for (const PowerUp& powerUp : powerUps)
     {
         if (powerUp.Activated)
@@ -406,7 +430,7 @@ void Game::DoCollisions()
             Collision collision = CheckCollision(*Ball, box);
             if (std::get<0>(collision)) // если произошло столкновение
             {
-                // разрушаем кирпич (если он не твёрдый)
+                // Разрушаем кирпич (если он не твердый)
                 if (!box.IsSolid)
                 {
                     box.Destroyed = true;
@@ -414,20 +438,22 @@ void Game::DoCollisions()
                     SoundEngine->play2D("../audio/bleep.mp3", false);
                 }
                 else
-                {   // если же кирпич - твёрдый, то активируем эффект тряски
+                {   // если же кирпич - твердый, то активируем эффект "Тряски"
                     ShakeTime = 0.05f;
                     Effects->Shake = true;
                     SoundEngine->play2D("../audio/solid.wav", false);
                 }
-                // обработка столкновения
+				
+                // Обработка столкновения
                 Direction dir = std::get<1>(collision);
                 glm::vec2 diff_vector = std::get<2>(collision);
-                if (!(Ball->PassThrough && !box.IsSolid)) // если активирован эффект "pass-through", то отключаем обработку столкновений на разрушаемых кирпичах 
+                if (!(Ball->PassThrough && !box.IsSolid)) // если активирован эффект "Pass-Through", то отключаем обработку столкновений на разрушаемых кирпичах 
                 {
                     if (dir == LEFT || dir == RIGHT) // горизонтальное столкновение
                     {
                         Ball->Velocity.x = -Ball->Velocity.x; // обращаем горизонтальную скорость
-                        // перемещение
+                        
+						// Перемещение
                         float penetration = Ball->Radius - std::abs(diff_vector.x);
                         if (dir == LEFT)
                             Ball->Position.x += penetration; // двигаем мяч обратно вправо
@@ -437,7 +463,8 @@ void Game::DoCollisions()
                     else // вертикальное столкновение
                     {
                         Ball->Velocity.y = -Ball->Velocity.y; // обращаем вертикальную скорость
-                        // перемещение
+                        
+						// Перемещение
                         float penetration = Ball->Radius - std::abs(diff_vector.y);
                         if (dir == UP)
                             Ball->Position.y -= penetration; // двигаем мяч обратно вверх
@@ -449,12 +476,12 @@ void Game::DoCollisions()
         }
     }
 
-    // также проводим проверку на столкновение бонуса с ракеткой игрока. Если такое событие произошло, то активируем бонус.
+    // Также проводим проверку на столкновение бонуса с ракеткой игрока. Если такое событие произошло, то активируем бонус
     for (PowerUp& powerUp : this->PowerUps)
     {
         if (!powerUp.Destroyed)
         {
-            // сначала проверяем, достиг ли бонус нижнего края окна и если это так, то: оставляем его неактивированным и уничтожаем
+            // Сначала проверяем, достиг ли бонус нижнего края окна и если это так, то оставляем его неактивированным и уничтожаем
             if (powerUp.Position.y >= this->Height)
                 powerUp.Destroyed = true;
 
@@ -467,70 +494,79 @@ void Game::DoCollisions()
             }
         }
     }
-    // проверка столкновений для ракетки игрока (если мяч не зафиксирован на ней)
+    
+	// Проверка столкновений для ракетки игрока (если мяч не зафиксирован на ней)
     Collision result = CheckCollision(*Ball, *Player);
     if (!Ball->Stuck && std::get<0>(result))
     {
-        // смотрим, в каком месте мяч ударился о ракетку, и в зависимости от этого изменяем скорость
+        // Смотрим, в каком месте мяч ударился о ракетку, и в зависимости от этого изменяем скорость
         float centerBoard = Player->Position.x + Player->Size.x / 2.0f;
         float distance = (Ball->Position.x + Ball->Radius) - centerBoard;
         float percentage = distance / (Player->Size.x / 2.0f);
-        // и соответствующим образом передвигаем
+		
+        // И соответствующим образом передвигаем
         float strength = 2.0f;
         glm::vec2 oldVelocity = Ball->Velocity;
         Ball->Velocity.x = INITIAL_BALL_VELOCITY.x * percentage * strength;
-        //Ball->Velocity.y = -Ball->Velocity.y;
+        // Ball->Velocity.y = -Ball->Velocity.y;
         Ball->Velocity = glm::normalize(Ball->Velocity) * glm::length(oldVelocity); // сумма проекций вектора скорости на соответствующие оси должна быть постоянной (умножаем на величину старой скорости, чтобы итоговая скорость не менялась)
-        // фикс проблемы "липкой ракетки"
+        
+		// Решение проблемы "липкой ракетки"
         Ball->Velocity.y = -1.0f * abs(Ball->Velocity.y);
 
-        // Если активирован "Sticky" бонус, то мяч прилипает к ракетке пока не будут вычислены новые векторы скорости
+        // Если активирован эффект "Sticky", то мяч прилипает к ракетке пока не будут вычислены новые векторы скорости
         Ball->Stuck = Ball->Sticky;
         SoundEngine->play2D("../audio/bleep.wav", false);
     }
 }
 
-bool CheckCollision(GameObject& one, GameObject& two) // Столкновение вида AABB - AABB
+bool CheckCollision(GameObject& one, GameObject& two) // столкновение вида AABB-AABB
 {
-    // перекрытие по оси x?
+    // Перекрытие по оси x?
     bool collisionX = one.Position.x + one.Size.x >= two.Position.x &&
         two.Position.x + two.Size.x >= one.Position.x;
-    // перекрытие по оси y?
+    
+	// Перекрытие по оси y?
     bool collisionY = one.Position.y + one.Size.y >= two.Position.y &&
         two.Position.y + two.Size.y >= one.Position.y;
-    // если перекрытия происходят относительно обеих осей, то мы имеем столкновение
+    
+	// Если перекрытия происходят относительно обеих осей, то мы имеем столкновение
     return collisionX && collisionY;
 }
 
-Collision CheckCollision(BallObject& one, GameObject& two) // Столкновение вида AABB - Окружность
+Collision CheckCollision(BallObject& one, GameObject& two) // столкновение вида AABB-Окружность
 {
-    // сначала вычисляем точку центра окружности 
+    // Сначала вычисляем точку центра окружности 
     glm::vec2 center(one.Position + one.Radius);
-    // вычисляем информацию по AABB(координаты центра, и половинки длин сторон)
+	
+    // Вычисляем информацию по AABB (координаты центра, и половинки длин сторон)
     glm::vec2 aabb_half_extents(two.Size.x / 2.0f, two.Size.y / 2.0f);
     glm::vec2 aabb_center(two.Position.x + aabb_half_extents.x, two.Position.y + aabb_half_extents.y);
-    // получаем вектор разности между центром окружности и центром AABB
+	
+    // Получаем вектор разности между центром окружности и центром AABB
     glm::vec2 difference = center - aabb_center;
     glm::vec2 clamped = glm::clamp(difference, -aabb_half_extents, aabb_half_extents);
-    // добавляя переменную clamped к AABB_center мы получим ближайшую к окружности точку, лежащую на стороне AABB
+	
+    // Добавляя переменную clamped к AABB_center мы получим ближайшую к окружности точку, лежащую на стороне AABB
     glm::vec2 closest = aabb_center + clamped;
-    // получаем вектор между центром окружности и ближайшей к ней точкой AABB, проверяем чтобы длина этого вектора была меньше радиуса окружности 
+	
+    // Получаем вектор между центром окружности и ближайшей к ней точкой AABB, проверяем чтобы длина этого вектора была меньше радиуса окружности 
     difference = closest - center;
 
-    if (glm::length(difference) < one.Radius) // именно "<", а не "<=", т.к. в противном случае в конце стандии обработки столкновения (когда объекты касаются друг друга) произойдет повторное столкновение
+    if (glm::length(difference) < one.Radius) // именно "<", а не "<=", т.к. в противном случае в конце стадии обработки столкновения (когда объекты касаются друг друга) произойдет повторное столкновение
         return std::make_tuple(true, VectorDirection(difference), difference);
     else
         return std::make_tuple(false, UP, glm::vec2(0.0f, 0.0f));
 }
 
-// вычисляем в каком направлении смотрит вектор (С,В,Ю или З)
+// Вычисляем в каком направлении смотрит вектор
 Direction VectorDirection(glm::vec2 target)
 {
     glm::vec2 compass[] = {
-        glm::vec2(0.0f, 1.0f),	// Вверх
-        glm::vec2(1.0f, 0.0f),	// Вправо
-        glm::vec2(0.0f, -1.0f),	// Вниз
-        glm::vec2(-1.0f, 0.0f)	// Влево
+        glm::vec2(0.0f, 1.0f),	// вверх
+        glm::vec2(1.0f, 0.0f),	// вправо
+        glm::vec2(0.0f, -1.0f),	// вниз
+        glm::vec2(-1.0f, 0.0f)	// влево
     };
     float max = 0.0f;
     unsigned int best_match = -1;

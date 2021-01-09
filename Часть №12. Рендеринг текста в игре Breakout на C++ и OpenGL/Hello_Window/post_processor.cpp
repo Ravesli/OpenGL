@@ -13,25 +13,28 @@
 PostProcessor::PostProcessor(Shader shader, unsigned int width, unsigned int height)
     : PostProcessingShader(shader), Texture(), Width(width), Height(height), Confuse(false), Chaos(false), Shake(false)
 {
-    // инициализация рендербуфера/фреймбуфера
+    // Инициализация рендербуфера/фреймбуфера
     glGenFramebuffers(1, &this->MSFBO);
     glGenFramebuffers(1, &this->FBO);
     glGenRenderbuffers(1, &this->RBO);
-    // инициализация памяти рендербуфера мультисэмплированным цветовым буфером (без использования буфера губины/трафарета)
+	
+    // Инициализация памяти рендербуфера мультисэмплированным цветовым буфером (без использования буфера губины/трафарета)
     glBindFramebuffer(GL_FRAMEBUFFER, this->MSFBO);
     glBindRenderbuffer(GL_RENDERBUFFER, this->RBO);
     glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_RGB, width, height); // выделение памяти для рендербуфера
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, this->RBO); // прикрепление мультисэмплированного объекта рендербуфера к фреймбуферу
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "ERROR::POSTPROCESSOR: Failed to initialize MSFBO" << std::endl;
-    // также инициализируем FBO/текстуру для блитирования мультисэмплированного цветового буфера; используется в шейдерных вычислениях (эффекты постпроцессинга)
+    
+	// Также инициализируем FBO/текстуру для блитирования мультисэмплированного цветового буфера; используется в шейдерных вычислениях (эффекты постобработки)
     glBindFramebuffer(GL_FRAMEBUFFER, this->FBO);
     this->Texture.Generate(width, height, NULL);
     glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, this->Texture.ID, 0); // прикрепляем текстуру к фреймбуферу
     if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cout << "ERROR::POSTPROCESSOR: Failed to initialize FBO" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    // инициализируем данные и uniform-переменные для рендеринга
+    
+	// Инициализируем данные и uniform-переменные для рендеринга
     this->initRenderData();
     this->PostProcessingShader.SetInteger("scene", 0, true);
     float offset = 1.0f / 300.0f;
@@ -41,7 +44,7 @@ PostProcessor::PostProcessor(Shader shader, unsigned int width, unsigned int hei
         {  offset,  offset  },  // вверх-вправо
         { -offset,  0.0f    },  // центр-влево
         {  0.0f,    0.0f    },  // центр-центр
-        {  offset,  0.0f    },  // центр - вправо
+        {  offset,  0.0f    },  // центр-вправо
         { -offset, -offset  },  // вниз-влево
         {  0.0f,   -offset  },  // вниз-центр
         {  offset, -offset  }   // вниз-вправо    
@@ -69,7 +72,7 @@ void PostProcessor::BeginRender()
 }
 void PostProcessor::EndRender()
 {
-    // теперь помещаем мультисэмплированный цветовой буфер в промежуточный FBO для дальнейшего сохранения в текстуру
+    // Теперь помещаем мультисэмплированный цветовой буфер в промежуточный FBO для дальнейшего сохранения в текстуру
     glBindFramebuffer(GL_READ_FRAMEBUFFER, this->MSFBO);
     glBindFramebuffer(GL_DRAW_FRAMEBUFFER, this->FBO);
     glBlitFramebuffer(0, 0, this->Width, this->Height, 0, 0, this->Width, this->Height, GL_COLOR_BUFFER_BIT, GL_NEAREST);
@@ -78,13 +81,14 @@ void PostProcessor::EndRender()
 
 void PostProcessor::Render(float time)
 {
-    // устанавливаем uniform-переменные/другие_опции
+    // Устанавливаем uniform-переменные/другие_опции
     this->PostProcessingShader.Use();
     this->PostProcessingShader.SetFloat("time", time);
     this->PostProcessingShader.SetInteger("confuse", this->Confuse);
     this->PostProcessingShader.SetInteger("chaos", this->Chaos);
     this->PostProcessingShader.SetInteger("shake", this->Shake);
-    // рендеринг текстурированного прямоугольника
+    
+	// Рендеринг текстурированного прямоугольника
     glActiveTexture(GL_TEXTURE0);
     this->Texture.Bind();
     glBindVertexArray(this->VAO);
@@ -94,10 +98,9 @@ void PostProcessor::Render(float time)
 
 void PostProcessor::initRenderData()
 {
-    // конфигурирование VAO/VBO
+    // Конфигурирование VAO/VBO
     unsigned int VBO;
     float vertices[] = {
-        // коорд.    // текстур.
         -1.0f, -1.0f, 0.0f, 0.0f,
          1.0f,  1.0f, 1.0f, 1.0f,
         -1.0f,  1.0f, 0.0f, 1.0f,

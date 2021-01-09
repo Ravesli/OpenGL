@@ -22,18 +22,19 @@ const glm::vec2 POWERUP_SIZE(60.0f, 20.0f);
 const glm::vec2 VELOCITY(0.0f, 150.0f);
 
 
-// Класс PowerUp наследует переменные состояния и функции рендеринга
-// от класса GameObject, но при этом содержит дополнительную информацию:
+// Класс PowerUp наследует переменные состояния и функции рендеринга от класса GameObject, 
+// но при этом содержит дополнительную информацию:
 // состояние бонусов, их длительность, активен ли бонус в данный момент или нет.
-// Тип бонуса сохранён в строковой переменной.
+// Тип бонуса сохранен в строковой переменной
 class PowerUp : public GameObject
 {
 public:
-    // состояние бонуса
+    // Состояние бонуса
     std::string Type;
-    float       Duration;
-    bool        Activated;
-    // конструктор
+    float Duration;
+    bool Activated;
+	
+    // Конструктор
     PowerUp(std::string type, glm::vec3 color, float duration, glm::vec2 position, Texture2D texture)
         : GameObject(position, POWERUP_SIZE, texture, color, VELOCITY), Type(type), Duration(duration), Activated() { }
 };

@@ -17,12 +17,13 @@ BallObject::BallObject(glm::vec2 pos, float radius, glm::vec2 velocity, Texture2
 
 glm::vec2 BallObject::Move(float dt, unsigned int window_width)
 {
-    // если мяч не зафиксирован ракеткой
+    // Если мяч не зафиксирован ракеткой,
     if (!this->Stuck)
     {
-        // перемещаем мяч
+        // то перемещаем мяч
         this->Position += this->Velocity * dt;
-        // затем проверяем, находится ли он за пределами границ окна, и если да, то изменяем скорость и восстанавливаем правильное положение
+        
+		// Затем проверяем, находится ли он за пределами границ окна, и если да, то изменяем скорость и восстанавливаем правильное положение
         if (this->Position.x <= 0.0f)
         {
             this->Velocity.x = -this->Velocity.x;
@@ -42,7 +43,7 @@ glm::vec2 BallObject::Move(float dt, unsigned int window_width)
     return this->Position;
 }
 
-// сбрасывает мяч в стартовое положение (если мяч находится за пределами границ окна)
+// Сбрасываем мяч в стартовое положение (если мяч находится за пределами границ окна)
 void BallObject::Reset(glm::vec2 position, glm::vec2 velocity)
 {
     this->Position = position;

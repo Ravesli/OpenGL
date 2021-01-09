@@ -18,11 +18,12 @@
 
 TextRenderer::TextRenderer(unsigned int width, unsigned int height)
 {
-    // загрузка и настройка шейдера
+    // Загрузка и настройка шейдера
     this->TextShader = ResourceManager::LoadShader("../shaders/text_2d.vs", "../shaders/text_2d.frag", nullptr, "text");
     this->TextShader.SetMatrix4("projection", glm::ortho(0.0f, static_cast<float>(width), static_cast<float>(height), 0.0f), true);
     this->TextShader.SetInteger("text", 0);
-    // загрузка VAO/VBO для текстурных прямоугольников
+	
+    // Загрузка VAO/VBO для текстурных прямоугольников
     glGenVertexArrays(1, &this->VAO);
     glGenBuffers(1, &this->VBO);
     glBindVertexArray(this->VAO);
@@ -36,30 +37,36 @@ TextRenderer::TextRenderer(unsigned int width, unsigned int height)
 
 void TextRenderer::Load(std::string font, unsigned int fontSize)
 {
-    // сначала очищаем ранее загруженные символы
+    // Сначала очищаем ранее загруженные символы
     this->Characters.clear();
-    // затем инициализируем и загружаем библиотеку FreeType
+	
+    // Затем инициализируем и загружаем библиотеку FreeType
     FT_Library ft;
     if (FT_Init_FreeType(&ft)) // все функции в случае ошибки возвращают значение, отличное от 0
         std::cout << "ERROR::FREETYPE: Could not init FreeType Library" << std::endl;
-    // загрузка шрифта в качестве face
+    
+	// Загрузка шрифта в качестве face
     FT_Face face;
     if (FT_New_Face(ft, font.c_str(), 0, &face))
         std::cout << "ERROR::FREETYPE: Failed to load font" << std::endl;
-    // устанавливаем размер загруженных глифов
+	
+    // Устанавливаем размер загруженных глифов
     FT_Set_Pixel_Sizes(face, 0, fontSize);
-    // отключаем ограничение на выравнивание байтов
+	
+    // Отключаем ограничение на выравнивание байтов
     glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-    // Затем, предварительно загружаем/компилируем символы шрифта и сохраняем их
-    for (GLubyte c = 0; c < 255; c++) // lol, смотрите что я тут сделал
+	
+    // Затем предварительно загружаем/компилируем символы шрифта и сохраняем их
+    for (GLubyte c = 0; c < 255; c++) 
     {
-        // загрузка символа глифа
+        // Загрузка символа глифа
         if (FT_Load_Char(face, c, FT_LOAD_RENDER))
         {
             std::cout << "ERROR::FREETYTPE: Failed to load Glyph" << std::endl;
             continue;
         }
-        // генерация текстуры
+		
+        // Генерация текстуры
         unsigned int texture;
         glGenTextures(1, &texture);
         glBindTexture(GL_TEXTURE_2D, texture);
@@ -74,13 +81,14 @@ void TextRenderer::Load(std::string font, unsigned int fontSize)
             GL_UNSIGNED_BYTE,
             face->glyph->bitmap.buffer
         );
-        // установка параметров текстур
+		
+        // Установка параметров текстур
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        // теперь сохраняем символы для их дальнейшего использования
+        // Теперь сохраняем символы для их дальнейшего использования
         Character character = {
             texture,
             glm::ivec2(face->glyph->bitmap.width, face->glyph->bitmap.rows),
@@ -90,20 +98,21 @@ void TextRenderer::Load(std::string font, unsigned int fontSize)
         Characters.insert(std::pair<char, Character>(c, character));
     }
     glBindTexture(GL_TEXTURE_2D, 0);
-    // как закончили, очищаем ресурсы FreeType
+	
+    // Как закончили, очищаем ресурсы FreeType
     FT_Done_Face(face);
     FT_Done_FreeType(ft);
 }
 
 void TextRenderer::RenderText(std::string text, float x, float y, float scale, glm::vec3 color)
 {
-    // активируем соответствующее состояние рендера
+    // Активируем соответствующее состояние рендера
     this->TextShader.Use();
     this->TextShader.SetVector3f("textColor", color);
     glActiveTexture(GL_TEXTURE0);
     glBindVertexArray(this->VAO);
 
-    // цикл по всем символам
+    // Цикл по всем символам
     std::string::const_iterator c;
     for (c = text.begin(); c != text.end(); c++)
     {
@@ -114,7 +123,8 @@ void TextRenderer::RenderText(std::string text, float x, float y, float scale, g
 
         float w = ch.Size.x * scale;
         float h = ch.Size.y * scale;
-        // обновляем VBO для каждого символа
+        
+		// Обновляем VBO для каждого символа
         float vertices[6][4] = {
             { xpos,     ypos + h,   0.0f, 1.0f },
             { xpos + w, ypos,       1.0f, 0.0f },
@@ -124,16 +134,20 @@ void TextRenderer::RenderText(std::string text, float x, float y, float scale, g
             { xpos + w, ypos + h,   1.0f, 1.0f },
             { xpos + w, ypos,       1.0f, 0.0f }
         };
-        // рендерим на прямоугольник текстуру глифа
+		
+        // Рендерим на прямоугольник текстуру глифа
         glBindTexture(GL_TEXTURE_2D, ch.TextureID);
-        // обновляем содержимое памяти VBO
+		
+        // Обновляем содержимое памяти VBO
         glBindBuffer(GL_ARRAY_BUFFER, this->VBO);
         glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices), vertices); // обязательно используйте glBufferSubData, а не glBufferData
         glBindBuffer(GL_ARRAY_BUFFER, 0);
-        // рендерим прямоугольник
+		
+        // Рендерим прямоугольник
         glDrawArrays(GL_TRIANGLES, 0, 6);
-        // теперь смещаем курсор к следующему глифу
-        x += (ch.Advance >> 6) * scale; // битовый двиг на 6, чтобы получить значение в пикселя (2^6 = 64)
+		
+        // Теперь смещаем курсор к следующему глифу
+        x += (ch.Advance >> 6) * scale; // битовый сдвиг на 6, чтобы получить значение в пикселя (2^6 = 64)
     }
     glBindVertexArray(0);
     glBindTexture(GL_TEXTURE_2D, 0);

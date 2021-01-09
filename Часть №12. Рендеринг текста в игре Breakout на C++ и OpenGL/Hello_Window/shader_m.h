@@ -13,37 +13,42 @@ class Shader
 {
 public:
     unsigned int ID;
-    // конструктор генерирует шейдер на лету
-    // ------------------------------------------------------------------------
+	
+    // Конструктор генерирует шейдер "на лету"
     Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr)
     {
-        // 1. получение исходного кода вершинного/фрагментного шейдера
+        // 1. Получение исходного кода вершинного/фрагментного шейдера
         std::string vertexCode;
         std::string fragmentCode;
         std::string geometryCode;
         std::ifstream vShaderFile;
         std::ifstream fShaderFile;
         std::ifstream gShaderFile;
-        // убеждаемся, что объекты ifstream могут выбросить исключение:
+		
+        // Убеждаемся, что объекты ifstream могут выбросить исключение:
         vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         try
         {
-            // открываем файлы
+            // Открываем файлы
             vShaderFile.open(vertexPath);
             fShaderFile.open(fragmentPath);
             std::stringstream vShaderStream, fShaderStream;
-            // читаем содержимое файловых буферов
+			
+            // Читаем содержимое файловых буферов
             vShaderStream << vShaderFile.rdbuf();
             fShaderStream << fShaderFile.rdbuf();
-            // закрываем файлы
+			
+            // Закрываем файлы
             vShaderFile.close();
             fShaderFile.close();
-            // конвертируем в строковую переменную данные из потока
+			
+            // Конвертируем в строковую переменную данные из потока
             vertexCode = vShaderStream.str();
             fragmentCode = fShaderStream.str();
-            // if geometry shader path is present, also load a geometry shader
+			
+            // Если путь к геометрическому шейдеру присутствует, то также загружаем и его
             if (geometryPath != nullptr)
             {
                 gShaderFile.open(geometryPath);
@@ -59,18 +64,22 @@ public:
         }
         const char* vShaderCode = vertexCode.c_str();
         const char* fShaderCode = fragmentCode.c_str();
-        // 2. компилируем шейдеры
+		
+        // 2. Компилируем шейдеры
         unsigned int vertex, fragment;
-        // вершинный шейдер
+		
+        // Вершинный шейдер
         vertex = glCreateShader(GL_VERTEX_SHADER);
         glShaderSource(vertex, 1, &vShaderCode, NULL);
         glCompileShader(vertex);
         checkCompileErrors(vertex, "VERTEX");
+		
         // Фрагментный шейдер
         fragment = glCreateShader(GL_FRAGMENT_SHADER);
         glShaderSource(fragment, 1, &fShaderCode, NULL);
         glCompileShader(fragment);
         checkCompileErrors(fragment, "FRAGMENT");
+		
         // Если был дан геометрический шейдер, то компилируем его
         unsigned int geometry;
         if (geometryPath != nullptr)
@@ -81,6 +90,7 @@ public:
             glCompileShader(geometry);
             checkCompileErrors(geometry, "GEOMETRY");
         }
+		
         // Шейдерная программа
         ID = glCreateProgram();
         glAttachShader(ID, vertex);
@@ -89,19 +99,21 @@ public:
             glAttachShader(ID, geometry);
         glLinkProgram(ID);
         checkCompileErrors(ID, "PROGRAM");
-        // После того, как мы связали шейдеры с нашей программой, удаляем их, т.к. они больше не нужны
+		
+        // После того, как мы связали шейдеры с нашей программой, удаляем их, т.к. они нам больше не нужны
         glDeleteShader(vertex);
         glDeleteShader(fragment);
         if (geometryPath != nullptr)
             glDeleteShader(geometry);
     }
-    // активация шейдера
-    // ------------------------------------------------------------------------
+	
+    // Активация шейдера
     void use() const
     {
         glUseProgram(ID);
     }
-    // полезные uniform-функции
+	
+    // Полезные uniform-функции
     // ------------------------------------------------------------------------
     void setBool(const std::string& name, bool value) const
     {
@@ -161,8 +173,7 @@ public:
     }
 
 private:
-    // полезные функции для проверки ошибок компиляции/связывания шейдеров.
-    // ------------------------------------------------------------------------
+    // Полезные функции для проверки ошибок компиляции/связывания шейдеров
     void checkCompileErrors(GLuint shader, std::string type)
     {
         GLint success;
