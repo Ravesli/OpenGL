@@ -219,29 +219,20 @@ int main()
         // Активируем шейдер
         ourShader.use();
 
-        // Создаем преобразование
-        glm::mat4 model = glm::mat4(1.0f); // сначала инициализируем единичную матрицу
-        glm::mat4 view = glm::mat4(1.0f);
+        // создаем преобразование
+        glm::mat4 view = glm::mat4(1.0f); // сначала инициализируем единичную матрицу
         glm::mat4 projection = glm::mat4(1.0f);
-        model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));
-        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
         projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100.0f);
-		
-        // Получаем местоположение uniform-матриц...
-        unsigned int modelLoc = glGetUniformLocation(ourShader.ID, "model");
-        unsigned int viewLoc = glGetUniformLocation(ourShader.ID, "view");
-        // ...передаем их в шейдеры(разными способами)
-        glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
-        glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
-		
-        // Примечание: В настоящее время мы устанавливаем матрицу проекции для каждого кадра, но поскольку матрица проекции редко меняется, то рекомендуется устанавливать её (единожды) вне основного цикла
-        ourShader.setMat4("projection", projection);
-
-        // Рендерим ящик
+        view = glm::translate(view, glm::vec3(0.0f, 0.0f, -3.0f));
+        // передаём матрицы преобразования в шейдеры
+        ourShader.setMat4("projection", projection);//Примечание: В настоящее время мы устанавливаем матрицу проекции для каждого кадра, но поскольку матрица проекции редко меняется, то рекомендуется устанавливать ее (единожды) вне основного цикла.
+        ourShader.setMat4("view", view);
+        
+        // рендерим ящики
         glBindVertexArray(VAO);
         for (unsigned int i = 0; i < 10; i++)
         {
-            // Вычисляем матрицу модели для каждого объекта и передаем её в шейдер до отрисовки
+            // вычисляем матрицу модели для каждого объекта и передаём ее в шейдер до отрисовки
             glm::mat4 model = glm::mat4(1.0f);
             model = glm::translate(model, cubePositions[i]);
             float angle = 20.0f * i;
